@@ -7,3 +7,6 @@
 [submodule "libs/sodapop"]
 	path = libs/sodapop
 	url = https://github.com/tesselode/sodapop.git
+[submodule "libs/classic"]
+	path = libs/classic
+	url = https://github.com/rxi/classic.git
