@@ -4,3 +4,6 @@
 [submodule "libs/flux"]
 	path = libs/flux
 	url = https://github.com/rxi/flux
+[submodule "libs/sodapop"]
+	path = libs/sodapop
+	url = https://github.com/tesselode/sodapop.git
