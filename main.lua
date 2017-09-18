@@ -1,35 +1,35 @@
-local sti = require "libs/Simple-Tiled-Implementation/sti"
+local Map = require "libs/Simple-Tiled-Implementation/sti"
 local Camera = require "camera"
+local Scene = require "scene"
 
-local map, width, height
-
+local scene
 
 function love.load()
-   camera = Camera:new()
-   setupDisplay()
-   map = sti("assets/maps/green_valley.lua")
-   width = map.width * map.tilewidth
-   height = map.height * map.tileheight
-   print("Map width:", width)
-   print("Map height:", width)
+   love.window.setMode(800, 600)
+
+   local map = Map("assets/maps/green_valley.lua")
+   local camera = Camera:new()
+   camera:setSize(800, 600)
+
+   scene = Scene:new()
+   scene:setCamera(camera)
+   scene:setMap(map)
 end
 
 function love.update(dt)
-   camera:update(dt)
-   updateInput(dt)
-   map:update(dt)
+   scene:update(dt)
 end
 
 function love.draw()
-   map:draw(-camera.x, -camera.y)
+   scene:draw()
 end
 
-function setupDisplay()
-   love.window.setMode(camera.width, camera.height)
-end
-
-function updateInput(dt)
-   if (love.keyboard.isDown("space")) then
-      camera:panTo(2, width/2, height/2)
+function love.keypressed(key, scancode, isRepeat)
+   if key=="l" and not isRepeat then
+      scene.camera:zoomOut()
+   elseif key=="k" and not isRepeat then
+      scene.camera:zoomIn()
+   elseif key=="space" and not isRepeat then
+      scene.camera:panTo(2, 1200, 1200)
    end
 end
