@@ -7,6 +7,7 @@ local Scene = require "scene"
 local SampleChar = require "samplechar"
 
 local currentScene = nil
+local debugMode = true
 
 function love.load()
    love.window.setMode(800, 600)
@@ -34,6 +35,9 @@ end
 
 function love.draw()
    currentScene:draw()
+   if debugMode then
+      drawDebugInfo()
+   end
 end
 
 function love.keypressed(key, scancode, isRepeat)
@@ -44,4 +48,8 @@ function love.keypressed(key, scancode, isRepeat)
    elseif key=="space" and not isRepeat then
       currentScene.camera:panTo(2, 1200, 1200)
    end
+end
+
+function drawDebugInfo()
+   love.graphics.print("FPS: "..tostring(love.timer.getFPS( )), 10, 10)
 end
