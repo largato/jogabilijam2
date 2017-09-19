@@ -1,23 +1,21 @@
-local flux = require "libs/flux/flux"
+flux = require "libs/flux/flux"
 
-Camera = {
-    x = 0,
-    y = 0,
-    scaleX = 1,
-    scaleY = 1,
-    panSpeed = 50,
-    scale = 1,
-    width = 0,
-    heigth = 0,
-    originalWidth = 0,
-    originalHeight = 0
-}
+local Object = require 'libs/classic/classic'
 
-function Camera:new(o)
-   o = o or {}
-   setmetatable(o, self)
-   self.__index = self
-   return o
+Camera = Object:extend()
+
+function Camera:new(w, h)
+   self.width = w
+   self.height = h
+   self.originalWidth = w
+   self.originalHeight = h
+
+   self.x = 0
+   self.y = 0
+   self.scaleX = 1
+   self.scaleY = 1
+   self.panSpeed = 50
+   self.scale = 1
 end
 
 function Camera:update(dt)
@@ -31,13 +29,6 @@ end
 
 function Camera:unset()
    love.graphics.pop()
-end
-
-function Camera:setSize(w, h)
-   self.width = w
-   self.originalWidth = w
-   self.height = h
-   self.originalHeight = h
 end
 
 function Camera:panTo(timeInSeconds, newX, newY)

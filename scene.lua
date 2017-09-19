@@ -1,15 +1,12 @@
 require "entitymanager"
 
-Scene = {
-   map = nil,
-   camera = nil
-}
+local Object = require 'libs/classic/classic'
 
-function Scene:new(o)
-   o = o or {}
-   setmetatable(o, self)
-   self.__index = self
-   return o
+Scene = Object:extend()
+
+function Scene:new(camera, map)
+   self.map = map
+   self.camera = camera
 end
 
 function Scene:setCamera(c)
