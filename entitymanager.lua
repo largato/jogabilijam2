@@ -46,4 +46,4 @@ function EntityManager:draw(ox, oy)
    end
 end
 
-return EntityManager
+manager = EntityManager()
