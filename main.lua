@@ -6,18 +6,13 @@ local Camera = require "camera"
 local Scene = require "scene"
 local SampleChar = require "samplechar"
 
-local scene
+local currentScene = nil
 
 function love.load()
    love.window.setMode(800, 600)
 
    local map = Map("assets/maps/green_valley.lua")
-   local camera = Camera:new()
-   camera:setSize(800, 600)
-
-   scene = Scene:new()
-   scene:setCamera(camera)
-   scene:setMap(map)
+   currentScene = Scene(Camera(800, 600), map)
 
    local player
    for k, object in pairs(map.objects) do
@@ -34,19 +29,19 @@ function love.load()
 end
 
 function love.update(dt)
-   scene:update(dt)
+   currentScene:update(dt)
 end
 
 function love.draw()
-   scene:draw()
+   currentScene:draw()
 end
 
 function love.keypressed(key, scancode, isRepeat)
    if key=="l" and not isRepeat then
-      scene.camera:zoomOut()
+      currentScene.camera:zoomOut()
    elseif key=="k" and not isRepeat then
-      scene.camera:zoomIn()
+      currentScene.camera:zoomIn()
    elseif key=="space" and not isRepeat then
-      scene.camera:panTo(2, 1200, 1200)
+      currentScene.camera:panTo(2, 1200, 1200)
    end
 end
