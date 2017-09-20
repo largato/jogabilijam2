@@ -1,4 +1,5 @@
 require "entitymanager"
+require "stringhelper"
 
 local Map = require "libs/Simple-Tiled-Implementation/sti"
 local sodapop = require "libs/sodapop/sodapop"
@@ -15,18 +16,16 @@ function love.load()
    local map = Map("assets/maps/green_valley.lua")
    currentScene = Scene(Camera(800, 600), map)
 
-   local player
    for k, object in pairs(map.objects) do
-      if object.name == "Player" then
-         player = object
-         break
+      if string.starts(object.name, "Player") then
+         -- TODO: Get hero name. Format: "Player-name"
+         manager:add(SampleChar(object.x, object.y, 96))
+      end
+      if string.starts(object.name, "CPU") then
+         -- TODO: Get CPU controlled character name. Format: "CPU-name"
+         manager:add(SampleChar(object.x, object.y, 96))
       end
    end
-
-   manager:add(SampleChar(player.x, player.y, 96))
-   manager:add(SampleChar(player.x + 64, player.y, 96))
-   manager:add(SampleChar(player.x, player.y + 64, 96))
-   manager:add(SampleChar(player.x + 64, player.y + 64, 96))
 end
 
 function love.update(dt)
@@ -46,7 +45,8 @@ function love.keypressed(key, scancode, isRepeat)
    elseif key=="k" and not isRepeat then
       currentScene.camera:zoomIn()
    elseif key=="space" and not isRepeat then
-      currentScene.camera:panTo(2, 1200, 1200)
+      currentScene.camera:panTo(2, currentScene.map.width * currentScene.map.tilewidth / 2 - currentScene.camera.width / 2,
+                                   currentScene.map.height * currentScene.map.tileheight / 2 - currentScene.camera.height / 2)
    end
 end
 
