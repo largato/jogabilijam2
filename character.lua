@@ -16,6 +16,7 @@ function Character:new(map, layer, x, y, movement)
    self.sprite = sodapop.newAnimatedSprite(self.x + map.tilewidth / 2, self.y + map.tileheight / 2)
    self.movement = movement or 3
    self.moveMap = self:movementMap()
+   self.targetTile = {x=self.tileX, y=self.tileY}
    self:load()
 end
 
@@ -39,6 +40,7 @@ function Character:draw(ox, oy)
    end
    if self.selected then
       self:drawMovement(ox, oy)
+      self:drawTargetTile(ox, oy)
    end
    self.sprite:draw(ox, oy)
 end
@@ -51,12 +53,23 @@ function Character:moveTo(tileX, tileY)
    self.sprite.x = self.x + self.map.tilewidth / 2
    self.sprite.y = self.y + self.map.tileheight / 2
    self.moveMap = self:movementMap()
+   self.selected = false
+   self.targetTile = {x=self.tileX, y=self.tileY}
 end
 
 function Character:drawHighlight(ox, oy)
    local r, g, b, a = love.graphics.getColor()
    love.graphics.setColor(255, 0, 0, 64)
    love.graphics.rectangle('fill', self.x - ox, self.y - oy, self.map.tilewidth, self.map.tileheight)
+   love.graphics.setColor(r, g, b, a)
+end
+
+function Character:drawTargetTile(ox, oy)
+   local r, g, b, a = love.graphics.getColor()
+   love.graphics.setColor(255, 0, 0, 90)
+   love.graphics.rectangle('fill', self.targetTile.x * self.map.tilewidth - ox,
+                           self.targetTile.y * self.map.tileheight - oy,
+                           self.map.tilewidth, self.map.tileheight)
    love.graphics.setColor(r, g, b, a)
 end
 
@@ -113,6 +126,62 @@ function Character:movementMap()
    end
 
    return moveMap
+end
+
+function Character:moveToTarget()
+   if self.targetTile.x == self.tileX and self.targetTile.y == self.tileY then
+      return
+   end
+   self:moveTo(self.targetTile.x, self.targetTile.y)
+end
+
+function Character:targetExists(target)
+   for i, tile in ipairs(self.moveMap) do
+      if tile.x == target.x and tile.y == target.y then
+         return true
+      end
+   end
+   return false
+end
+
+function Character:targetTileUp()
+   local newTarget = {x=self.targetTile.x, y=self.targetTile.y - 1}
+   if newTarget.x == self.tileX and newTarget.y == self.tileY then
+      newTarget.y = newTarget.y - 1
+   end
+   if self:targetExists(newTarget) then
+      self.targetTile = newTarget
+   end
+end
+
+function Character:targetTileDown()
+   local newTarget = {x=self.targetTile.x, y=self.targetTile.y + 1}
+   if newTarget.x == self.tileX and newTarget.y == self.tileY then
+      newTarget.y = newTarget.y + 1
+   end
+   if self:targetExists(newTarget) then
+      self.targetTile = newTarget
+   end
+end
+
+function Character:targetTileLeft()
+   local newTarget = {x=self.targetTile.x - 1, y=self.targetTile.y}
+   if newTarget.x == self.tileX and newTarget.y == self.tileY then
+      newTarget.x = newTarget.x - 1
+   end
+   if self:targetExists(newTarget) then
+      self.targetTile = newTarget
+   end
+end
+
+function Character:targetTileRight()
+   local newTarget = {x=self.targetTile.x + 1, y=self.targetTile.y}
+   if newTarget.x == self.tileX and newTarget.y == self.tileY then
+      newTarget.x = newTarget.x + 1
+   end
+   if self:targetExists(newTarget) then
+      self.targetTile = newTarget
+   end
 end
 
 return Character
