@@ -14,7 +14,7 @@ function EntityManager:add(entity)
       self.entitiesByType[entity.type] = {}
    end
 
-   self.entitiesByType[entity.type][entity] = true;
+   table.insert(self.entitiesByType[entity.type], entity)
 end
 
 function EntityManager:remove(entity)
@@ -23,7 +23,12 @@ function EntityManager:remove(entity)
    end
 
    self.entities[entity] = nil
-   self.entitiesByType[entity.type][entity] = nil
+   for i, v in ipairs(self.entitiesByType[entity.type]) do
+      if v == entity then
+         table.remove(self.entitiesByType[entity.type], i)
+         break
+      end
+   end
 end
 
 function EntityManager:getByType(type)
