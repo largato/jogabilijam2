@@ -58,22 +58,6 @@ end
 
 function SampleChar:update(dt)
    SampleChar.super.update(self, dt)
-
-   if love.keyboard.isDown("d") or love.keyboard.isDown("right") then
-      self.sprite:switch("walkingRight", true)
-      self.sprite.x = self.sprite.x + self.speed * dt
-   elseif love.keyboard.isDown("a") or love.keyboard.isDown("left") then
-      self.sprite:switch("walkingLeft", true)
-      self.sprite.x = self.sprite.x - self.speed * dt
-   elseif love.keyboard.isDown("w") or love.keyboard.isDown("up") then
-      self.sprite:switch("walkingUp", true)
-      self.sprite.y = self.sprite.y - self.speed * dt
-   elseif love.keyboard.isDown("s") or love.keyboard.isDown("down") then
-      self.sprite:switch("walkingDown", true)
-      self.sprite.y = self.sprite.y + self.speed * dt
-   else
-      self.sprite:switch("idle")
-   end
 end
 
 return SampleChar
