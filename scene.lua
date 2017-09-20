@@ -14,7 +14,7 @@ function Scene:new(camera, map)
       local parts = object.name:split("-")
       local characterType = parts[1]
       local characterName = parts[2]
-      manager:add(SampleChar(object.x, object.y, 96, characterType))
+      manager:add(SampleChar(map, object.layer, object.x, object.y, 96, characterType))
    end
 
    self.playerChars = manager:getByType("Player")
@@ -61,13 +61,11 @@ end
 function Scene:nextChar()
    local index = self.currentChar % table.getn(self.playerChars) + 1
    self:selectChar(index)
-   print("selected char", self.currentChar)
 end
 
 function Scene:previousChar()
    local index = (self.currentChar - 2) % table.getn(self.playerChars) + 1
    self:selectChar(index)
-   print("selected char", self.currentChar)
 end
 
 function love.keypressed(key, scancode, isRepeat)
@@ -78,6 +76,9 @@ function love.keypressed(key, scancode, isRepeat)
    elseif key=="space" and not isRepeat then
       Scene.currentScene.camera:panTo(2, Scene.currentScene.map.width * Scene.currentScene.map.tilewidth / 2 - Scene.currentScene.camera.width / 2,
                                       Scene.currentScene.map.height * Scene.currentScene.map.tileheight / 2 - Scene.currentScene.camera.height / 2)
+   elseif key=="up" and not isRepeat and Scene.currentScene.currentChar ~= 0 then
+      local char = Scene.currentScene.playerChars[Scene.currentScene.currentChar]
+      char:moveTo(char.tileX, char.tileY - 1)
    end
 end
 
