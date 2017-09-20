@@ -45,27 +45,45 @@ function Scene:update(dt)
    manager:update(dt)
 end
 
-function Scene:selectChar(index)
+function Scene:highlightChar(index)
    if self.currentChar == index then
       return
    end
 
    if self.currentChar > 0 then
-      self.playerChars[self.currentChar].selected = false
+      self.playerChars[self.currentChar].highlighted = false
    end
 
-   self.playerChars[index].selected = true
+   self.playerChars[index].highlighted = true
    self.currentChar = index
 end
 
+function Scene:selectChar(index)
+   if self.currentChar > 0 then
+      self.playerChars[self.currentChar].selected = true
+   end
+end
+
+function Scene:unselectChar(index)
+   if self.currentChar > 0 then
+      self.playerChars[self.currentChar].selected = false
+   end
+end
+
 function Scene:nextChar()
+   if self.currentChar > 0 and self.playerChars[self.currentChar].selected then
+      return
+   end
    local index = self.currentChar % table.getn(self.playerChars) + 1
-   self:selectChar(index)
+   self:highlightChar(index)
 end
 
 function Scene:previousChar()
+   if self.currentChar > 0 and self.playerChars[self.currentChar].selected then
+      return
+   end
    local index = (self.currentChar - 2) % table.getn(self.playerChars) + 1
-   self:selectChar(index)
+   self:highlightChar(index)
 end
 
 function love.keypressed(key, scancode, isRepeat)
@@ -76,9 +94,10 @@ function love.keypressed(key, scancode, isRepeat)
    elseif key=="space" and not isRepeat then
       Scene.currentScene.camera:panTo(2, Scene.currentScene.map.width * Scene.currentScene.map.tilewidth / 2 - Scene.currentScene.camera.width / 2,
                                       Scene.currentScene.map.height * Scene.currentScene.map.tileheight / 2 - Scene.currentScene.camera.height / 2)
-   elseif key=="up" and not isRepeat and Scene.currentScene.currentChar ~= 0 then
-      local char = Scene.currentScene.playerChars[Scene.currentScene.currentChar]
-      char:moveTo(char.tileX, char.tileY - 1)
+   elseif key=="return" and not isRepeat and Scene.currentScene.currentChar ~= 0 then
+      Scene.currentScene:selectChar(Scene.currentScene.currentChar)
+   elseif key=="escape" and not isRepeat and Scene.currentScene.currentChar ~= 0 then
+      Scene.currentScene:unselectChar(Scene.currentScene.currentChar)
    end
 end
 

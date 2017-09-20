@@ -11,6 +11,7 @@ function Character:new(map, layer, x, y, movement)
    self.tileY = math.floor(y / map.tileheight)
    self.x = self.tileX * map.tilewidth
    self.y = self.tileY * map.tilewidth
+   self.highlighted = false
    self.selected = false
    self.sprite = sodapop.newAnimatedSprite(self.x + map.tilewidth / 2, self.y + map.tileheight / 2)
    self.movement = movement or 3
@@ -33,8 +34,10 @@ function Character:draw(ox, oy)
    if self.sprite == nil then
       return
    end
+   if self.highlighted then
+      self:drawHighlight(ox, oy)
+   end
    if self.selected then
-      self:drawSelector(ox, oy)
       self:drawMovement(ox, oy)
    end
    self.sprite:draw(ox, oy)
@@ -50,7 +53,7 @@ function Character:moveTo(tileX, tileY)
    self.moveMap = self:movementMap()
 end
 
-function Character:drawSelector(ox, oy)
+function Character:drawHighlight(ox, oy)
    local r, g, b, a = love.graphics.getColor()
    love.graphics.setColor(255, 0, 0, 64)
    love.graphics.rectangle('fill', self.x - ox, self.y - oy, self.map.tilewidth, self.map.tileheight)
