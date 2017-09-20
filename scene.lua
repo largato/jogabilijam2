@@ -1,12 +1,25 @@
 require "entitymanager"
 
 local Object = require 'libs/classic/classic'
+local SampleChar = require "samplechar"
 
 Scene = Object:extend()
+Scene.currentScene = nil
 
 function Scene:new(camera, map)
    self.map = map
    self.camera = camera
+
+   for k, object in pairs(map.objects) do
+      local parts = object.name:split("-")
+      local characterType = parts[1]
+      local characterName = parts[2]
+      manager:add(SampleChar(object.x, object.y, 96, characterType))
+   end
+
+   self.playerChars = manager:getByType("Player")
+   self.cpuChars = manager:getByType("CPU")
+   self.currentChar = 0
 end
 
 function Scene:setCamera(c)
@@ -31,5 +44,43 @@ function Scene:update(dt)
    self.map:update(dt)
    manager:update(dt)
 end
+
+function Scene:selectChar(index)
+   if self.currentChar == index then
+      return
+   end
+
+   if self.currentChar > 0 then
+      self.playerChars[self.currentChar].selected = false
+   end
+
+   self.playerChars[index].selected = true
+   self.currentChar = index
+end
+
+function Scene:nextChar()
+   local index = self.currentChar % table.getn(self.playerChars) + 1
+   self:selectChar(index)
+   print("selected char", self.currentChar)
+end
+
+function Scene:previousChar()
+   local index = (self.currentChar - 2) % table.getn(self.playerChars) + 1
+   self:selectChar(index)
+   print("selected char", self.currentChar)
+end
+
+function love.keypressed(key, scancode, isRepeat)
+   if key=="left" and not isRepeat then
+      Scene.currentScene:previousChar()
+   elseif key=="right" and not isRepeat then
+      Scene.currentScene:nextChar()
+   elseif key=="space" and not isRepeat then
+      Scene.currentScene.camera:panTo(2, Scene.currentScene.map.width * Scene.currentScene.map.tilewidth / 2 - Scene.currentScene.camera.width / 2,
+                                      Scene.currentScene.map.height * Scene.currentScene.map.tileheight / 2 - Scene.currentScene.camera.height / 2)
+   end
+end
+
+
 
 return Scene
