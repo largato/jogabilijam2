@@ -22,7 +22,7 @@ function Scene:draw()
    c:set()
    self.map:resize(c.width, c.height)
    self.map:draw(-c.x, -c.y, c.scaleX, c.scaleY)
-   manager:draw()
+   manager:draw(0,0)
    c:unset()
 end
 
