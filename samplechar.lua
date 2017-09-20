@@ -2,10 +2,10 @@ Character = require "character"
 
 SampleChar = Character:extend()
 
-function SampleChar:new(x, y, speed)
+function SampleChar:new(x, y, speed, chartype)
    SampleChar.super.new(self, x, y)
    self.speed = speed
-   self.type = "SampleChar"
+   self.type = chartype
 end
 
 function SampleChar:load()

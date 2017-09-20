@@ -17,14 +17,10 @@ function love.load()
    currentScene = Scene(Camera(800, 600), map)
 
    for k, object in pairs(map.objects) do
-      if string.starts(object.name, "Player") then
-         -- TODO: Get hero name. Format: "Player-name"
-         manager:add(SampleChar(object.x, object.y, 96))
-      end
-      if string.starts(object.name, "CPU") then
-         -- TODO: Get CPU controlled character name. Format: "CPU-name"
-         manager:add(SampleChar(object.x, object.y, 96))
-      end
+      local parts = object.name:split("-")
+      local characterType = parts[1]
+      local characterName = parts[2]
+      manager:add(SampleChar(object.x, object.y, 96, characterType))
    end
 end
 
@@ -40,13 +36,9 @@ function love.draw()
 end
 
 function love.keypressed(key, scancode, isRepeat)
-   if key=="l" and not isRepeat then
-      currentScene.camera:zoomOut()
-   elseif key=="k" and not isRepeat then
-      currentScene.camera:zoomIn()
-   elseif key=="space" and not isRepeat then
+   if key=="space" and not isRepeat then
       currentScene.camera:panTo(2, currentScene.map.width * currentScene.map.tilewidth / 2 - currentScene.camera.width / 2,
-                                   currentScene.map.height * currentScene.map.tileheight / 2 - currentScene.camera.height / 2)
+                                currentScene.map.height * currentScene.map.tileheight / 2 - currentScene.camera.height / 2)
    end
 end
 
