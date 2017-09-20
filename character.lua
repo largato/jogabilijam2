@@ -14,6 +14,7 @@ function Character:new(map, layer, x, y, movement)
    self.selected = false
    self.sprite = sodapop.newAnimatedSprite(self.x + map.tilewidth / 2, self.y + map.tileheight / 2)
    self.movement = movement or 3
+   self.moveMap = self:movementMap()
    self:load()
 end
 
@@ -46,6 +47,7 @@ function Character:moveTo(tileX, tileY)
    self.y = tileY * self.map.tileheight
    self.sprite.x = self.x + self.map.tilewidth / 2
    self.sprite.y = self.y + self.map.tileheight / 2
+   self.moveMap = self:movementMap()
 end
 
 function Character:drawSelector(ox, oy)
@@ -61,12 +63,26 @@ function Character:drawMovement(ox, oy)
    local r, g, b, a = love.graphics.getColor()
    love.graphics.setColor(255, 0, 255, 64)
 
+   for i, tile in ipairs(self.moveMap) do
+      love.graphics.rectangle('fill',
+                              tile.x * self.map.tilewidth - ox,
+                              tile.y * self.map.tileheight - oy,
+                              self.map.tilewidth,
+                              self.map.tileheight)
+   end
+
+   love.graphics.setColor(r, g, b, a)
+end
+
+function Character:movementMap()
    local q = Queue() -- bfs queue
    q:push({x=self.tileX, y=self.tileY})
 
    local d = {} -- distance map
    d[self.tileX] = {}
    d[self.tileX][self.tileY] = 0
+
+   local moveMap = {}
 
    local function tadd(q, d, tile, newTile)
       if d[newTile.x] == nil or d[newTile.x][newTile.y] == nil then
@@ -77,6 +93,7 @@ function Character:drawMovement(ox, oy)
          d[newTile.x][newTile.y] = d[tile.x][tile.y] + 1
 
          if d[newTile.x][newTile.y] <= self.movement then
+            table.insert(moveMap, {x=newTile.x, y=newTile.y})
             q:push({x=newTile.x, y=newTile.y})
          end
       end
@@ -85,13 +102,6 @@ function Character:drawMovement(ox, oy)
    while not q:empty() do
       local tile = q:pop()
       if tile.x >= 0 and tile.y >= 0 and tile.x <= self.map.width and tile.y <= self.map.height then
-
-         love.graphics.rectangle('fill',
-                                 tile.x * self.map.tilewidth - ox,
-                                 tile.y * self.map.tileheight - oy,
-                                 self.map.tilewidth,
-                                 self.map.tileheight)
-
          tadd(q, d, tile, {x=tile.x - 1, y = tile.y})
          tadd(q, d, tile, {x=tile.x + 1, y = tile.y})
          tadd(q, d, tile, {x=tile.x, y = tile.y - 1})
@@ -99,7 +109,7 @@ function Character:drawMovement(ox, oy)
       end
    end
 
-   love.graphics.setColor(r, g, b, a)
+   return moveMap
 end
 
 return Character
