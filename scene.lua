@@ -20,6 +20,7 @@ function Scene:new(camera, map)
    self.playerChars = manager:getByType("Player")
    self.cpuChars = manager:getByType("CPU")
    self.currentChar = 0
+   self:nextChar()
 end
 
 function Scene:setCamera(c)
@@ -86,18 +87,73 @@ function Scene:previousChar()
    self:highlightChar(index)
 end
 
+function Scene:targetTileUp()
+   if not self:charSelected() then
+      return
+   end
+   self.playerChars[self.currentChar]:targetTileUp()
+end
+
+function Scene:targetTileDown()
+   if not self:charSelected() then
+      return
+   end
+   self.playerChars[self.currentChar]:targetTileDown()
+end
+
+function Scene:targetTileLeft()
+   if not self:charSelected() then
+      return
+   end
+   self.playerChars[self.currentChar]:targetTileLeft()
+end
+
+function Scene:targetTileRight()
+   if not self:charSelected() then
+      return
+   end
+   self.playerChars[self.currentChar]:targetTileRight()
+end
+
+function Scene:charSelected()
+   return self.currentChar > 0 and self.playerChars[self.currentChar].selected
+end
+
+function Scene:moveChar()
+   if not self:charSelected() then
+      return
+   end
+   self.playerChars[self.currentChar]:moveToTarget()
+end
+
 function love.keypressed(key, scancode, isRepeat)
-   if key=="left" and not isRepeat then
-      Scene.currentScene:previousChar()
-   elseif key=="right" and not isRepeat then
-      Scene.currentScene:nextChar()
-   elseif key=="space" and not isRepeat then
+   if key=="space" and not isRepeat then
       Scene.currentScene.camera:panTo(2, Scene.currentScene.map.width * Scene.currentScene.map.tilewidth / 2 - Scene.currentScene.camera.width / 2,
                                       Scene.currentScene.map.height * Scene.currentScene.map.tileheight / 2 - Scene.currentScene.camera.height / 2)
    elseif key=="return" and not isRepeat and Scene.currentScene.currentChar ~= 0 then
-      Scene.currentScene:selectChar(Scene.currentScene.currentChar)
+      if Scene.currentScene:charSelected() then
+         Scene.currentScene:moveChar()
+      else
+         Scene.currentScene:selectChar(Scene.currentScene.currentChar)
+      end
    elseif key=="escape" and not isRepeat and Scene.currentScene.currentChar ~= 0 then
       Scene.currentScene:unselectChar(Scene.currentScene.currentChar)
+   elseif key=="up" and not isRepeat and Scene.currentScene.currentChar ~= 0 then
+      Scene.currentScene:targetTileUp()
+   elseif key=="down" and not isRepeat and Scene.currentScene.currentChar ~= 0 then
+      Scene.currentScene:targetTileDown()
+   elseif key=="left" and not isRepeat then
+      if Scene.currentScene:charSelected() then
+         Scene.currentScene:targetTileLeft()
+      else
+         Scene.currentScene:previousChar()
+      end
+   elseif key=="right" and not isRepeat then
+      if Scene.currentScene:charSelected() then
+         Scene.currentScene:targetTileRight()
+      else
+         Scene.currentScene:nextChar()
+      end
    end
 end
 
