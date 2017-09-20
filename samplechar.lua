@@ -1,9 +1,9 @@
-Character = require "character"
+local Character = require "character"
 
 SampleChar = Character:extend()
 
 function SampleChar:new(map, layer, x, y, speed, chartype)
-   SampleChar.super.new(self, map, layer, x, y)
+   SampleChar.super.new(self, map, layer, x, y, 2)
    self.speed = speed
    self.type = chartype
 end
