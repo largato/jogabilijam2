@@ -7,12 +7,14 @@ local Camera = require "camera"
 local Scene = require "scene"
 
 local debugMode = true
+local width = 1920
+local height = 1080
 
 function love.load()
-   love.window.setMode(800, 600)
+   love.window.setMode(width, height)
 
    local map = Map("assets/maps/green_valley.lua")
-   Scene.currentScene = Scene(Camera(800, 600), map)
+   Scene.currentScene = Scene(Camera(width, height), map)
 end
 
 function love.update(dt)
