@@ -67,7 +67,11 @@ end
 
 function Scene:unselectChar(index)
    if self.currentChar > 0 then
-      self.playerChars[self.currentChar].selected = false
+      local char = self.playerChars[self.currentChar]
+      char.selected = false
+      char.attacking = false
+      char.moving = false
+      char.targetTile = {x=char.tileX, y=char.tileY}
    end
 end
 
@@ -119,23 +123,46 @@ function Scene:charSelected()
    return self.currentChar > 0 and self.playerChars[self.currentChar].selected
 end
 
-function Scene:moveChar()
+function Scene:charMoving()
+   return self.currentChar > 0 and self.playerChars[self.currentChar].moving
+end
+
+function Scene:charAttacking()
+   return self.currentChar > 0 and self.playerChars[self.currentChar].attacking
+end
+
+function Scene:move()
    if not self:charSelected() then
       return
    end
    self.playerChars[self.currentChar]:moveToTarget()
 end
 
+function Scene:attack()
+   if not self:charSelected() then
+      return
+   end
+   self.playerChars[self.currentChar]:attackTarget()
+end
+
+function Scene:setMoving()
+   if not self:charSelected() then
+      return
+   end
+   self.playerChars[self.currentChar].moving = true
+end
+
+function Scene:setAttacking()
+   if not self:charSelected() then
+      return
+   end
+   self.playerChars[self.currentChar].attacking = true
+end
+
 function love.keypressed(key, scancode, isRepeat)
    if key=="space" and not isRepeat then
       Scene.currentScene.camera:panTo(2, Scene.currentScene.map.width * Scene.currentScene.map.tilewidth / 2 - Scene.currentScene.camera.width / 2,
                                       Scene.currentScene.map.height * Scene.currentScene.map.tileheight / 2 - Scene.currentScene.camera.height / 2)
-   elseif key=="return" and not isRepeat and Scene.currentScene.currentChar ~= 0 then
-      if Scene.currentScene:charSelected() then
-         Scene.currentScene:moveChar()
-      else
-         Scene.currentScene:selectChar(Scene.currentScene.currentChar)
-      end
    elseif key=="escape" and not isRepeat and Scene.currentScene.currentChar ~= 0 then
       Scene.currentScene:unselectChar(Scene.currentScene.currentChar)
    elseif key=="up" and not isRepeat and Scene.currentScene.currentChar ~= 0 then
@@ -153,6 +180,29 @@ function love.keypressed(key, scancode, isRepeat)
          Scene.currentScene:targetTileRight()
       else
          Scene.currentScene:nextChar()
+      end
+   elseif key=="a" and not isRepeat then
+      if Scene.currentScene:charMoving() or Scene.currentScene:charAttacking() then
+         return
+      end
+      if not Scene.currentScene:charSelected() then
+         Scene.currentScene:selectChar(Scene.currentScene.currentChar)
+      end
+      Scene.currentScene:setAttacking()
+   elseif key=="m" and not isRepeat then
+      if Scene.currentScene:charMoving() or Scene.currentScene:charAttacking() then
+         return
+      end
+      if not Scene.currentScene:charSelected() then
+         Scene.currentScene:selectChar(Scene.currentScene.currentChar)
+      end
+      Scene.currentScene:setMoving()
+   elseif key=="return" and not isRepeat then
+      if Scene.currentScene:charMoving() then
+         Scene.currentScene:move();
+      end
+      if Scene.currentScene:charAttacking() then
+         Scene.currentScene:attack();
       end
    end
 end
