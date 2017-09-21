@@ -280,8 +280,6 @@ end
 function Scene:keyPressed(key, scancode,  isRepeat)
    if key=="escape" and not isRepeat and self.playerCharIndex ~= 0 then
       self:unselectChar(self.playerCharIndex)
-   elseif key=="s" and not isRepeat and self.playerCharIndex ~= 0 then
-      self:skip()
    elseif key=="up" and not isRepeat and self.playerCharIndex ~= 0 then
       if self:charActing() then
          self:targetTileUp()
