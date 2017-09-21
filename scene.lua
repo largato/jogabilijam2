@@ -141,6 +141,8 @@ function Scene:nextChar()
       index = index % table.getn(self.playerChars) + 1
    until not self.playerChars[index]:turnDone()
    self:highlightChar(index)
+   self.camera:panTo(2, self:currentChar().x - self.camera.width / 2,
+                     self:currentChar().y - self.camera.height / 2)
 end
 
 function Scene:previousChar()
@@ -153,6 +155,8 @@ function Scene:previousChar()
       index = (index - 2) % table.getn(self.playerChars) + 1
    until not self.playerChars[index]:turnDone()
    self:highlightChar(index)
+   self.camera:panTo(2, self:currentChar().x - self.camera.width / 2,
+                     self:currentChar().y - self.camera.height / 2)
 end
 
 function Scene:targetTileUp()
@@ -205,6 +209,13 @@ function Scene:move()
    end
 end
 
+function Scene:select()
+   if self.playerCharIndex == 0 then
+      return
+   end
+   self:currentChar().selected = true
+end
+
 function Scene:attack()
    if not self:charSelected() then
       return
@@ -213,20 +224,6 @@ function Scene:attack()
    if self:currentChar():turnDone() then
       self:skip()
    end
-end
-
-function Scene:setMoving()
-   if not self:charSelected() or self:currentChar().moved  then
-      return
-   end
-   self:currentChar().moving = true
-end
-
-function Scene:setAttacking()
-   if not self:charSelected() or self:currentChar().attacked then
-      return
-   end
-   self:currentChar().attacking = true
 end
 
 function Scene:turnEnded()
@@ -262,6 +259,24 @@ function Scene:currentChar()
    return self.playerChars[self.playerCharIndex]
 end
 
+function Scene:charActing()
+   return self:currentChar():acting()
+end
+
+function Scene:menuUp()
+   if not self:charSelected() then
+      return
+   end
+   self:currentChar():menuUp()
+end
+
+function Scene:menuDown()
+   if not self:charSelected() then
+      return
+   end
+   self:currentChar():menuDown()
+end
+
 function Scene:keyPressed(key, scancode,  isRepeat)
    if key=="space" and not isRepeat then
       self.camera:panTo(2, self.map.width * self.map.tilewidth / 2 - self.camera.width / 2,
@@ -271,9 +286,17 @@ function Scene:keyPressed(key, scancode,  isRepeat)
    elseif key=="s" and not isRepeat and self.playerCharIndex ~= 0 then
       self:skip()
    elseif key=="up" and not isRepeat and self.playerCharIndex ~= 0 then
-      self:targetTileUp()
+      if self:charActing() then
+         self:targetTileUp()
+      else
+         self:menuUp();
+      end
    elseif key=="down" and not isRepeat and self.playerCharIndex ~= 0 then
-      self:targetTileDown()
+      if self:charActing() then
+         self:targetTileDown()
+      else
+         self:menuDown();
+      end
    elseif key=="left" and not isRepeat then
       if self:charSelected() then
          self:targetTileLeft()
@@ -286,27 +309,23 @@ function Scene:keyPressed(key, scancode,  isRepeat)
       else
          self:nextChar()
       end
-   elseif key=="a" and not isRepeat then
-      if self:charMoving() or self:charAttacking() then
-         return
-      end
+   elseif key=="return" and not isRepeat and self.playerCharIndex ~= 0 then
       if not self:charSelected() then
-         self:selectChar(self.playerCharIndex)
-      end
-      self:setAttacking()
-   elseif key=="m" and not isRepeat then
-      if self:charMoving() or self:charAttacking() then
-         return
-      end
-      if not self:charSelected() then
-         self:selectChar(self.playerCharIndex)
-      end
-      self:setMoving()
-   elseif key=="return" and not isRepeat then
-      if self:charMoving() then
+         self:select();
+      elseif self:charSelected() and not self:charActing() then
+         local action = self:currentChar():action()
+         if action == 1 then
+            self:currentChar().moving = true
+         elseif action == 2 then
+            self:currentChar().attacking = true
+         elseif action == 3 then
+            self:skip()
+         elseif action == 4 then
+            self:unselectChar()
+         end
+      elseif self:charMoving() then
          self:move();
-      end
-      if self:charAttacking() then
+      elseif self:charAttacking() then
          self:attack();
       end
    end
