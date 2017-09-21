@@ -141,7 +141,7 @@ function Scene:nextChar()
       index = index % table.getn(self.playerChars) + 1
    until not self.playerChars[index]:turnDone()
    self:highlightChar(index)
-   self.camera:panTo(2, self:currentChar().x - self.camera.width / 2,
+   self.camera:panTo(1, self:currentChar().x - self.camera.width / 2,
                      self:currentChar().y - self.camera.height / 2)
 end
 
@@ -155,7 +155,7 @@ function Scene:previousChar()
       index = (index - 2) % table.getn(self.playerChars) + 1
    until not self.playerChars[index]:turnDone()
    self:highlightChar(index)
-   self.camera:panTo(2, self:currentChar().x - self.camera.width / 2,
+   self.camera:panTo(1, self:currentChar().x - self.camera.width / 2,
                      self:currentChar().y - self.camera.height / 2)
 end
 
