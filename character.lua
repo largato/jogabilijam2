@@ -4,7 +4,7 @@ local Queue = require "queue"
 
 Character = Object:extend()
 
-function Character:new(map, layer, x, y, movement)
+function Character:new(map, layer, x, y, movement, attack)
    self.map = map
    self.layer = layer
    self.tileX = math.floor(x / map.tilewidth)
@@ -15,8 +15,14 @@ function Character:new(map, layer, x, y, movement)
    self.selected = false
    self.sprite = sodapop.newAnimatedSprite(self.x + map.tilewidth / 2, self.y + map.tileheight / 2)
    self.movement = movement or 3
-   self.moveMap = self:movementMap()
+   self.attack = attack or 1
+   self.moveMap = self:actionMap(self.movement)
+   self.attackMap = self:actionMap(self.attack)
    self.targetTile = {x=self.tileX, y=self.tileY}
+   self.moving = false -- show move map
+   self.attacking = false -- show attack map
+   self.moved = false
+   self.attacked = false
    self:load()
 end
 
@@ -38,8 +44,12 @@ function Character:draw(ox, oy)
    if self.highlighted then
       self:drawHighlight(ox, oy)
    end
-   if self.selected then
-      self:drawMovement(ox, oy)
+   if self.moving then
+      self:drawMap(ox, oy, self.moveMap, {0, 255, 255, 64})
+      self:drawTargetTile(ox, oy)
+   end
+   if self.attacking then
+      self:drawMap(ox, oy, self.attackMap, {255, 0, 0, 64})
       self:drawTargetTile(ox, oy)
    end
    self.sprite:draw(ox, oy)
@@ -52,8 +62,10 @@ function Character:moveTo(tileX, tileY)
    self.y = tileY * self.map.tileheight
    self.sprite.x = self.x + self.map.tilewidth / 2
    self.sprite.y = self.y + self.map.tileheight / 2
-   self.moveMap = self:movementMap()
+   self.moveMap = self:actionMap(self.movement)
+   self.attackMap = self:actionMap(self.attack)
    self.selected = false
+   self.moving = false
    self.targetTile = {x=self.tileX, y=self.tileY}
 end
 
@@ -75,11 +87,11 @@ end
 
 -- run a BFS to draw possible movement positions
 -- TODO: check positions for another characters or tiled collidable map objects
-function Character:drawMovement(ox, oy)
+function Character:drawMap(ox, oy, map, color)
    local r, g, b, a = love.graphics.getColor()
-   love.graphics.setColor(255, 0, 255, 64)
+   love.graphics.setColor(unpack(color))
 
-   for i, tile in ipairs(self.moveMap) do
+   for i, tile in ipairs(map) do
       love.graphics.rectangle('fill',
                               tile.x * self.map.tilewidth - ox,
                               tile.y * self.map.tileheight - oy,
@@ -90,7 +102,7 @@ function Character:drawMovement(ox, oy)
    love.graphics.setColor(r, g, b, a)
 end
 
-function Character:movementMap()
+function Character:actionMap(distance)
    local q = Queue() -- bfs queue
    q:push({x=self.tileX, y=self.tileY})
 
@@ -99,6 +111,7 @@ function Character:movementMap()
    d[self.tileX][self.tileY] = 0
 
    local moveMap = {}
+   table.insert(moveMap, {x=self.tileX, y=self.tileY})
 
    local function tadd(q, d, tile, newTile)
       if d[newTile.x] == nil or d[newTile.x][newTile.y] == nil then
@@ -108,7 +121,7 @@ function Character:movementMap()
 
          d[newTile.x][newTile.y] = d[tile.x][tile.y] + 1
 
-         if d[newTile.x][newTile.y] <= self.movement then
+         if d[newTile.x][newTile.y] <= distance then
             table.insert(moveMap, {x=newTile.x, y=newTile.y})
             q:push({x=newTile.x, y=newTile.y})
          end
@@ -135,8 +148,21 @@ function Character:moveToTarget()
    self:moveTo(self.targetTile.x, self.targetTile.y)
 end
 
+function Character:attackTarget()
+   if self.targetTile.x == self.tileX and self.targetTile.y == self.tileY then
+      return
+   end
+   -- TODO: attack and unset attacking property
+end
+
 function Character:targetExists(target)
-   for i, tile in ipairs(self.moveMap) do
+   local map = nil
+   if self.moving then
+      map = self.moveMap
+   else
+      map = self.attackMap
+   end
+   for i, tile in ipairs(map) do
       if tile.x == target.x and tile.y == target.y then
          return true
       end
@@ -146,9 +172,6 @@ end
 
 function Character:targetTileUp()
    local newTarget = {x=self.targetTile.x, y=self.targetTile.y - 1}
-   if newTarget.x == self.tileX and newTarget.y == self.tileY then
-      newTarget.y = newTarget.y - 1
-   end
    if self:targetExists(newTarget) then
       self.targetTile = newTarget
    end
@@ -156,9 +179,6 @@ end
 
 function Character:targetTileDown()
    local newTarget = {x=self.targetTile.x, y=self.targetTile.y + 1}
-   if newTarget.x == self.tileX and newTarget.y == self.tileY then
-      newTarget.y = newTarget.y + 1
-   end
    if self:targetExists(newTarget) then
       self.targetTile = newTarget
    end
@@ -166,9 +186,6 @@ end
 
 function Character:targetTileLeft()
    local newTarget = {x=self.targetTile.x - 1, y=self.targetTile.y}
-   if newTarget.x == self.tileX and newTarget.y == self.tileY then
-      newTarget.x = newTarget.x - 1
-   end
    if self:targetExists(newTarget) then
       self.targetTile = newTarget
    end
@@ -176,9 +193,6 @@ end
 
 function Character:targetTileRight()
    local newTarget = {x=self.targetTile.x + 1, y=self.targetTile.y}
-   if newTarget.x == self.tileX and newTarget.y == self.tileY then
-      newTarget.x = newTarget.x + 1
-   end
    if self:targetExists(newTarget) then
       self.targetTile = newTarget
    end
