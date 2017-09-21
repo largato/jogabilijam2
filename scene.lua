@@ -21,6 +21,11 @@ function Scene:new(camera, map)
    self.cpuChars = manager:getByType("CPU")
    self.currentChar = 0
    self:nextChar()
+
+   local scaleFactor = love.graphics.getWidth()/1280
+   self.titleFont = love.graphics.newFont('assets/fonts/dpcomic.ttf', 36*scaleFactor)
+   self.charNameFont = love.graphics.newFont('assets/fonts/dpcomic.ttf', 26*scaleFactor)
+   self.menuItemFont = love.graphics.newFont('assets/fonts/dpcomic.ttf', 20*scaleFactor)
 end
 
 function Scene:setCamera(c)
@@ -34,10 +39,61 @@ end
 function Scene:draw()
    local c = self.camera
    c:set()
-   self.map:resize(c.width, c.height)
+   --self.map:resize(c.width, c.height)
    self.map:draw(-c.x, -c.y, c.scaleX, c.scaleY)
    manager:draw(0,0)
+   self:drawHUD(c.x, c.y)
    c:unset()
+end
+
+function Scene:drawHUD(ox, oy)
+   -- Store original graphical settings --
+   local oldFont = love.graphics.getFont()
+   local r, g, b, a = love.graphics.getColor()
+
+   -- Turn/phase information --
+   local turnNumber = 2 -- todo: get from manager?
+   local teamName = "Enemy" -- todo: get from manager?
+   local turnInfo = "Turn "..turnNumber.." - "..teamName.." phase"
+   local tunInfoX = love.graphics.getWidth() - self.titleFont:getWidth(turnInfo) - 10
+   love.graphics.setFont(self.titleFont)
+   love.graphics.setColor(255, 0, 0, 255)
+   love.graphics.printf(turnInfo, ox+tunInfoX, oy+10, love.graphics.getWidth(), 'left')
+
+   -- Selected character sheet --
+   local charSheetX = ox + love.graphics.getWidth() * 0.02
+   local charSheetY = oy + love.graphics.getHeight() * 0.75
+   local charSheetWidth = love.graphics.getWidth() * 0.25
+   local charSheetHeight = love.graphics.getHeight() * 0.23
+   local charPicX = charSheetX + (charSheetWidth * 0.05)
+   local charPicY = charSheetY + (charSheetHeight * 0.2)
+   local charPicWidth = charSheetWidth * 0.4
+   local charPicHeight = charSheetHeight * 0.75
+   local charNameX = charSheetX + (charSheetWidth * 0.05)
+   local charNameY = charSheetY + (charSheetHeight * 0.02)
+   local charAttrWidth = (charSheetWidth - charPicWidth) * 0.8
+   local charAttrX = charNameX + charPicWidth + (charSheetWidth * 0.02)
+   local charHPY = charNameY + (charSheetHeight * 0.2)
+   local charMPY = charHPY + (charSheetHeight * 0.2)
+   local charName = "character name" -- todo: get from manager?
+   local charHP = "48/57" -- todo: get from manager?
+   local charMP = "13/21" -- todo: get from manager?
+   love.graphics.setColor(0, 0, 255, 128)
+   love.graphics.rectangle('fill', charSheetX, charSheetY, charSheetWidth, charSheetHeight)
+   love.graphics.setColor(255, 0, 0, 255)
+   love.graphics.rectangle('fill', charPicX, charPicY, charPicWidth, charPicHeight)
+   love.graphics.setColor(255, 255, 255, 255)
+   love.graphics.setFont(self.charNameFont)
+   love.graphics.printf(charName, charNameX, charNameY, charSheetWidth, 'center')
+   love.graphics.setFont(self.menuItemFont)
+   love.graphics.printf("HP", charAttrX, charHPY, charAttrWidth, 'left')
+   love.graphics.printf(charHP, charAttrX, charHPY, charAttrWidth, 'right')
+   love.graphics.printf("MP", charAttrX, charMPY, charAttrWidth, 'left')
+   love.graphics.printf(charMP, charAttrX, charMPY, charAttrWidth, 'right')
+
+   -- Restore original graphical settings --
+   love.graphics.setFont(oldFont)
+   love.graphics.setColor(r, g, b, a)
 end
 
 function Scene:update(dt)
