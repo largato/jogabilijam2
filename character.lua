@@ -64,8 +64,6 @@ function Character:moveTo(tileX, tileY)
    self.sprite.y = self.y + self.map.tileheight / 2
    self.moveMap = self:actionMap(self.movement)
    self.attackMap = self:actionMap(self.attack)
-   self.selected = false
-   self.moving = false
    self.targetTile = {x=self.tileX, y=self.tileY}
 end
 
@@ -169,12 +167,16 @@ function Character:moveToTarget()
       return
    end
    self:moveTo(self.targetTile.x, self.targetTile.y)
+   self.moving = false
+   self.moved = true
 end
 
 function Character:attackTarget()
    if self.targetTile.x == self.tileX and self.targetTile.y == self.tileY then
       return
    end
+   self.attacking = false
+   self.attacked = true
    -- TODO: attack and unset attacking property
 end
 
@@ -219,6 +221,19 @@ function Character:targetTileRight()
    if self:targetExists(newTarget) then
       self.targetTile = newTarget
    end
+end
+
+function Character:turnDone()
+   return self.moved and self.attacked
+end
+
+function Character:skip()
+   self.highlighted = false
+   self.moving = false
+   self.attacking = false
+   self.moved = true
+   self.attacked = true
+   self.selected = false
 end
 
 return Character
