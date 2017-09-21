@@ -278,10 +278,7 @@ function Scene:menuDown()
 end
 
 function Scene:keyPressed(key, scancode,  isRepeat)
-   if key=="space" and not isRepeat then
-      self.camera:panTo(2, self.map.width * self.map.tilewidth / 2 - self.camera.width / 2,
-                                      self.map.height * self.map.tileheight / 2 - self.camera.height / 2)
-   elseif key=="escape" and not isRepeat and self.playerCharIndex ~= 0 then
+   if key=="escape" and not isRepeat and self.playerCharIndex ~= 0 then
       self:unselectChar(self.playerCharIndex)
    elseif key=="s" and not isRepeat and self.playerCharIndex ~= 0 then
       self:skip()
