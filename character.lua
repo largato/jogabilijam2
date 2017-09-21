@@ -302,10 +302,10 @@ function Character:drawContextMenu(ox, oy)
                            self.contextMenu.width / 8, self.contextMenu.height / 8)
 
    -- menu items --
-   self:drawContextMenuLine(1, "Move", ox, oy)
-   self:drawContextMenuLine(2, "Attack", ox, oy)
-   self:drawContextMenuLine(3, "Skip", ox, oy)
-   self:drawContextMenuLine(4, "Cancel", ox, oy)
+   self:drawContextMenuLine(1, "Mover", ox, oy)
+   self:drawContextMenuLine(2, "Atacar", ox, oy)
+   self:drawContextMenuLine(3, "Terminar", ox, oy)
+   self:drawContextMenuLine(4, "Cancelar", ox, oy)
 
    love.graphics.setColor(r, g, b, a)
 end
