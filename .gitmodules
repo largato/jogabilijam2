@@ -10,3 +10,6 @@
 [submodule "libs/classic"]
 	path = libs/classic
 	url = https://github.com/rxi/classic.git
+[submodule "libs/knife"]
+	path = libs/knife
+	url = https://github.com/airstruck/knife.git
