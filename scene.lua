@@ -19,8 +19,10 @@ function Scene:new(camera, map)
 
    self.playerChars = manager:getByType("Player")
    self.cpuChars = manager:getByType("CPU")
-   self.currentChar = 0
+   self.playerCharIndex = 0
    self:nextChar()
+   self.turn = 1
+   self.team = "Player"
 
    local scaleFactor = love.graphics.getWidth()/1280
    self.titleFont = love.graphics.newFont('assets/fonts/dpcomic.ttf', 36*scaleFactor)
@@ -52,9 +54,7 @@ function Scene:drawHUD(ox, oy)
    local r, g, b, a = love.graphics.getColor()
 
    -- Turn/phase information --
-   local turnNumber = 2 -- todo: get from manager?
-   local teamName = "Enemy" -- todo: get from manager?
-   local turnInfo = "Turn "..turnNumber.." - "..teamName.." phase"
+   local turnInfo = "Turn "..self.turn.." - "..self.team.." phase"
    local tunInfoX = love.graphics.getWidth() - self.titleFont:getWidth(turnInfo) - 10
    love.graphics.setFont(self.titleFont)
    love.graphics.setColor(255, 0, 0, 255)
@@ -103,27 +103,27 @@ function Scene:update(dt)
 end
 
 function Scene:highlightChar(index)
-   if self.currentChar == index then
+   if self.playerCharIndex == index then
       return
    end
 
-   if self.currentChar > 0 then
-      self.playerChars[self.currentChar].highlighted = false
+   if self.playerCharIndex > 0 then
+      self:currentChar().highlighted = false
    end
 
    self.playerChars[index].highlighted = true
-   self.currentChar = index
+   self.playerCharIndex = index
 end
 
 function Scene:selectChar(index)
-   if self.currentChar > 0 then
-      self.playerChars[self.currentChar].selected = true
+   if self.playerCharIndex > 0 then
+      self:currentChar().selected = true
    end
 end
 
 function Scene:unselectChar(index)
-   if self.currentChar > 0 then
-      local char = self.playerChars[self.currentChar]
+   if self.playerCharIndex > 0 then
+      local char = self:currentChar()
       char.selected = false
       char.attacking = false
       char.moving = false
@@ -132,18 +132,26 @@ function Scene:unselectChar(index)
 end
 
 function Scene:nextChar()
-   if self.currentChar > 0 and self.playerChars[self.currentChar].selected then
+   if (self.playerCharIndex > 0 and self:currentChar().selected) or self:turnEnded() then
       return
    end
-   local index = self.currentChar % table.getn(self.playerChars) + 1
+
+   local index = self.playerCharIndex
+   repeat
+      index = index % table.getn(self.playerChars) + 1
+   until not self.playerChars[index]:turnDone()
    self:highlightChar(index)
 end
 
 function Scene:previousChar()
-   if self.currentChar > 0 and self.playerChars[self.currentChar].selected then
+   if (self.playerCharIndex > 0 and self:currentChar().selected) or self:turnEnded() then
       return
    end
-   local index = (self.currentChar - 2) % table.getn(self.playerChars) + 1
+
+   local index = self.playerCharIndex
+   repeat
+      index = (index - 2) % table.getn(self.playerChars) + 1
+   until not self.playerChars[index]:turnDone()
    self:highlightChar(index)
 end
 
@@ -151,79 +159,120 @@ function Scene:targetTileUp()
    if not self:charSelected() then
       return
    end
-   self.playerChars[self.currentChar]:targetTileUp()
+   self:currentChar():targetTileUp()
 end
 
 function Scene:targetTileDown()
    if not self:charSelected() then
       return
    end
-   self.playerChars[self.currentChar]:targetTileDown()
+   self:currentChar():targetTileDown()
 end
 
 function Scene:targetTileLeft()
    if not self:charSelected() then
       return
    end
-   self.playerChars[self.currentChar]:targetTileLeft()
+   self:currentChar():targetTileLeft()
 end
 
 function Scene:targetTileRight()
    if not self:charSelected() then
       return
    end
-   self.playerChars[self.currentChar]:targetTileRight()
+   self:currentChar():targetTileRight()
 end
 
 function Scene:charSelected()
-   return self.currentChar > 0 and self.playerChars[self.currentChar].selected
+   return self.playerCharIndex > 0 and self:currentChar().selected
 end
 
 function Scene:charMoving()
-   return self.currentChar > 0 and self.playerChars[self.currentChar].moving
+   return self.playerCharIndex > 0 and self:currentChar().moving
 end
 
 function Scene:charAttacking()
-   return self.currentChar > 0 and self.playerChars[self.currentChar].attacking
+   return self.playerCharIndex > 0 and self:currentChar().attacking
 end
 
 function Scene:move()
    if not self:charSelected() then
       return
    end
-   self.playerChars[self.currentChar]:moveToTarget()
+   self:currentChar():moveToTarget()
+   if self:currentChar():turnDone() then
+      self:skip()
+   end
 end
 
 function Scene:attack()
    if not self:charSelected() then
       return
    end
-   self.playerChars[self.currentChar]:attackTarget()
+   self:currentChar():attackTarget()
+   if self:currentChar():turnDone() then
+      self:skip()
+   end
 end
 
 function Scene:setMoving()
-   if not self:charSelected() then
+   if not self:charSelected() or self:currentChar().moved  then
       return
    end
-   self.playerChars[self.currentChar].moving = true
+   self:currentChar().moving = true
 end
 
 function Scene:setAttacking()
-   if not self:charSelected() then
+   if not self:charSelected() or self:currentChar().attacked then
       return
    end
-   self.playerChars[self.currentChar].attacking = true
+   self:currentChar().attacking = true
+end
+
+function Scene:turnEnded()
+   for i, char in ipairs(self.playerChars) do
+      if not char:turnDone() then
+         return false
+      end
+   end
+   return true
+end
+
+function Scene:nextTeam()
+   if self.team == "Player" then
+      self.team = "Enemy"
+   else
+      self.team = "Player"
+   end
+end
+
+function Scene:skip()
+   if self.playerCharIndex == 0 then
+      return
+   end
+   self:currentChar():skip()
+   if self:turnEnded() then
+      self:nextTeam()
+   else
+      self:nextChar()
+   end
+end
+
+function Scene:currentChar()
+   return self.playerChars[self.playerCharIndex]
 end
 
 function love.keypressed(key, scancode, isRepeat)
    if key=="space" and not isRepeat then
       Scene.currentScene.camera:panTo(2, Scene.currentScene.map.width * Scene.currentScene.map.tilewidth / 2 - Scene.currentScene.camera.width / 2,
                                       Scene.currentScene.map.height * Scene.currentScene.map.tileheight / 2 - Scene.currentScene.camera.height / 2)
-   elseif key=="escape" and not isRepeat and Scene.currentScene.currentChar ~= 0 then
-      Scene.currentScene:unselectChar(Scene.currentScene.currentChar)
-   elseif key=="up" and not isRepeat and Scene.currentScene.currentChar ~= 0 then
+   elseif key=="escape" and not isRepeat and Scene.currentScene.playerCharIndex ~= 0 then
+      Scene.currentScene:unselectChar(Scene.currentScene.playerCharIndex)
+   elseif key=="s" and not isRepeat and Scene.currentScene.playerCharIndex ~= 0 then
+      Scene.currentScene:skip()
+   elseif key=="up" and not isRepeat and Scene.currentScene.playerCharIndex ~= 0 then
       Scene.currentScene:targetTileUp()
-   elseif key=="down" and not isRepeat and Scene.currentScene.currentChar ~= 0 then
+   elseif key=="down" and not isRepeat and Scene.currentScene.playerCharIndex ~= 0 then
       Scene.currentScene:targetTileDown()
    elseif key=="left" and not isRepeat then
       if Scene.currentScene:charSelected() then
@@ -242,7 +291,7 @@ function love.keypressed(key, scancode, isRepeat)
          return
       end
       if not Scene.currentScene:charSelected() then
-         Scene.currentScene:selectChar(Scene.currentScene.currentChar)
+         Scene.currentScene:selectChar(Scene.currentScene.playerCharIndex)
       end
       Scene.currentScene:setAttacking()
    elseif key=="m" and not isRepeat then
@@ -250,7 +299,7 @@ function love.keypressed(key, scancode, isRepeat)
          return
       end
       if not Scene.currentScene:charSelected() then
-         Scene.currentScene:selectChar(Scene.currentScene.currentChar)
+         Scene.currentScene:selectChar(Scene.currentScene.playerCharIndex)
       end
       Scene.currentScene:setMoving()
    elseif key=="return" and not isRepeat then
@@ -262,7 +311,5 @@ function love.keypressed(key, scancode, isRepeat)
       end
    end
 end
-
-
 
 return Scene
