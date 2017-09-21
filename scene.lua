@@ -105,6 +105,9 @@ function Scene:update(dt)
    self.camera:update(dt)
    self.map:update(dt)
    manager:update(dt)
+   if self.team == "Enemy" and self.enemyBehavior ~= nil then
+      self.enemyBehavior:update(dt)
+   end
 end
 
 function Scene:highlightChar(index)
@@ -148,6 +151,7 @@ function Scene:nextChar()
    self:highlightChar(index)
    self.camera:panTo(1, self:char().x - self.camera.width / 2,
                      self:char().y - self.camera.height / 2)
+   self:char():resetHUD()
 end
 
 function Scene:previousChar()
@@ -251,8 +255,18 @@ end
 function Scene:nextTeam()
    if self.team == "Player" then
       self.team = "Enemy"
+      self:startEnemyTurn()
    else
       self.team = "Player"
+      self.turn = self.turn + 1
+   end
+   self:resetChars()
+   self:nextChar()
+end
+
+function Scene:resetChars()
+   for i, char in ipairs(self:currentTeam()) do
+      char:reset()
    end
 end
 
@@ -294,7 +308,76 @@ function Scene:menuDown()
    self:char():menuDown()
 end
 
+function Scene:startEnemyTurn()
+   -- TODO: create a different behavior for each enemy type
+   self.enemyStates = {
+      default = {
+         { duration = 0.2 },
+         { duration = 0.2, action = Scene.enemySelect },
+         { duration = 0.2, action = Scene.enemySetMoving },
+         { duration = 0.2, action = Scene.enemySetDestination },
+         { duration = 0.2, action = Scene.enemyMove, after = 'attack'}
+      },
+      attack = {
+         { duration = 0.2 },
+         { duration = 0.2, action = Scene.enemySetAttacking },
+         { duration = 0.2, action = Scene.enemySetAttackTarget },
+         { duration = 0.2, action = Scene.enemyAttack, after = 'actionEnd' }
+      },
+      actionEnd = {
+         { action = Scene.enemyCheckEnd }
+      }
+   }
+
+   self.enemyBehavior = Behavior(self.enemyStates, self)
+   self.charIndex = 0
+end
+
+function Scene:enemySetMoving(scene)
+   scene:char().moving = true
+end
+
+function Scene:enemySetDestination(scene)
+   -- TODO: find best move
+   scene:targetTileDown()
+end
+
+function Scene:enemySetAttacking(scene)
+   scene:char().attacking = true
+end
+
+function Scene:enemySetAttackTarget(scene)
+   -- TODO: find best move
+   scene:targetTileDown()
+end
+
+function Scene:enemyMove(scene)
+   scene:move()
+end
+
+function Scene:enemyAttack(scene)
+   scene:attack()
+end
+
+function Scene:enemyCheckEnd(scene)
+   if not scene:turnEnded() then
+      scene.enemyBehavior:setState('default', 1)
+   else
+      scene:nextTeam()
+   end
+end
+
+function Scene:enemySelect(scene)
+   if scene:char() == nil then
+      scene:nextChar()
+   end
+   scene:char().selected = true
+end
+
 function Scene:keyPressed(key, scancode,  isRepeat)
+   if self.team == "Enemy" then
+      return
+   end
    if key=="escape" and not isRepeat and self.charIndex ~= 0 then
       self:unselectChar(self.charIndex)
    elseif key=="up" and not isRepeat and self.charIndex ~= 0 then

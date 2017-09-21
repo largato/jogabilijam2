@@ -290,6 +290,20 @@ function Character:drawHUD(ox, oy)
    end
 end
 
+function Character:reset()
+   self.selected = false
+   self.moving = false
+   self.attacking = false
+   self.moved = false
+   self.attacked = false
+   self:resetHUD()
+end
+
+function Character:resetHUD()
+   self.contextMenu.selectedLine = 1
+   self.targetTile = {x=self.tileX, y=self.tileY}
+end
+
 function Character:drawContextMenu(ox, oy)
    local r, g, b, a = love.graphics.getColor()
    -- menu window --
