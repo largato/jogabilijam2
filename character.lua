@@ -45,11 +45,11 @@ function Character:draw(ox, oy)
       self:drawHighlight(ox, oy)
    end
    if self.moving then
-      self:drawMap(ox, oy, self.moveMap, {0, 255, 255, 64})
+      self:drawMap(ox, oy, self.moveMap, {0, 255, 255, 64}, {0, 255, 255, 100})
       self:drawTargetTile(ox, oy)
    end
    if self.attacking then
-      self:drawMap(ox, oy, self.attackMap, {255, 0, 0, 64})
+      self:drawMap(ox, oy, self.attackMap, {255, 0, 0, 64}, {255, 0, 0, 100})
       self:drawTargetTile(ox, oy)
    end
    self.sprite:draw(ox, oy)
@@ -72,31 +72,54 @@ end
 function Character:drawHighlight(ox, oy)
    local r, g, b, a = love.graphics.getColor()
    love.graphics.setColor(255, 0, 0, 64)
-   love.graphics.rectangle('fill', self.x - ox, self.y - oy, self.map.tilewidth, self.map.tileheight)
+   love.graphics.rectangle('fill', self.x - ox, self.y - oy,
+                           self.map.tilewidth, self.map.tileheight,
+                           self.map.tilewidth / 4, self.map.tileheight / 4)
+   love.graphics.setColor(255, 0, 0, 100)
+   love.graphics.rectangle('line', self.x - ox, self.y - oy,
+                           self.map.tilewidth, self.map.tileheight,
+                           self.map.tilewidth / 4, self.map.tileheight / 4)
    love.graphics.setColor(r, g, b, a)
 end
 
 function Character:drawTargetTile(ox, oy)
    local r, g, b, a = love.graphics.getColor()
-   love.graphics.setColor(255, 0, 0, 90)
+   love.graphics.setColor(255, 0, 0, 150)
    love.graphics.rectangle('fill', self.targetTile.x * self.map.tilewidth - ox,
                            self.targetTile.y * self.map.tileheight - oy,
-                           self.map.tilewidth, self.map.tileheight)
+                           self.map.tilewidth, self.map.tileheight,
+                           self.map.tilewidth / 4, self.map.tileheight / 4)
+   love.graphics.setColor(255, 0, 0, 200)
+   love.graphics.rectangle('line', self.targetTile.x * self.map.tilewidth - ox,
+                           self.targetTile.y * self.map.tileheight - oy,
+                           self.map.tilewidth, self.map.tileheight,
+                           self.map.tilewidth / 4, self.map.tileheight / 4)
    love.graphics.setColor(r, g, b, a)
 end
 
 -- run a BFS to draw possible movement positions
 -- TODO: check positions for another characters or tiled collidable map objects
-function Character:drawMap(ox, oy, map, color)
+function Character:drawMap(ox, oy, map, color, border)
    local r, g, b, a = love.graphics.getColor()
-   love.graphics.setColor(unpack(color))
 
    for i, tile in ipairs(map) do
+      love.graphics.setColor(unpack(color))
       love.graphics.rectangle('fill',
                               tile.x * self.map.tilewidth - ox,
                               tile.y * self.map.tileheight - oy,
                               self.map.tilewidth,
-                              self.map.tileheight)
+                              self.map.tileheight,
+                              self.map.tilewidth / 4,
+                              self.map.tileheight / 4)
+
+      love.graphics.setColor(unpack(border))
+      love.graphics.rectangle('line',
+                              tile.x * self.map.tilewidth - ox,
+                              tile.y * self.map.tileheight - oy,
+                              self.map.tilewidth,
+                              self.map.tileheight,
+                              self.map.tilewidth / 4,
+                              self.map.tileheight / 4)
    end
 
    love.graphics.setColor(r, g, b, a)
