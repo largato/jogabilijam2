@@ -2,6 +2,7 @@ require "entitymanager"
 
 local Object = require 'libs/classic/classic'
 local SampleChar = require "samplechar"
+local Behavior = require "libs/knife/knife/behavior"
 
 Scene = Object:extend()
 Scene.currentScene = nil
@@ -20,8 +21,7 @@ function Scene:new(camera, map)
 
    self.playerChars = manager:getByType("Player")
    self.cpuChars = manager:getByType("CPU")
-   self.playerCharIndex = 0
-   self:nextChar()
+   self.charIndex = 0
    self.turn = 1
    self.team = "Player"
 
@@ -29,6 +29,8 @@ function Scene:new(camera, map)
    self.titleFont = love.graphics.newFont('assets/fonts/dpcomic.ttf', 36*scaleFactor)
    self.charNameFont = love.graphics.newFont('assets/fonts/dpcomic.ttf', 26*scaleFactor)
    self.menuItemFont = love.graphics.newFont('assets/fonts/dpcomic.ttf', 20*scaleFactor)
+
+   self:nextChar()
 end
 
 function Scene:setCamera(c)
@@ -77,9 +79,9 @@ function Scene:drawHUD(ox, oy)
       local charAttrX = charNameX + charPicWidth + (charSheetWidth * 0.02)
       local charHPY = charNameY + (charSheetHeight * 0.2)
       local charMPY = charHPY + (charSheetHeight * 0.2)
-      local charName = self:currentChar().name
-      local charHP = self:currentChar().HP.."/"..self:currentChar().originalHP
-      local charMP = self:currentChar().MP.."/"..self:currentChar().originalMP
+      local charName = self:char().name
+      local charHP = self:char().HP.."/"..self:char().originalHP
+      local charMP = self:char().MP.."/"..self:char().originalMP
 
       love.graphics.setColor(0, 0, 255, 128)
       love.graphics.rectangle('fill', charSheetX, charSheetY, charSheetWidth, charSheetHeight)
@@ -106,27 +108,27 @@ function Scene:update(dt)
 end
 
 function Scene:highlightChar(index)
-   if self.playerCharIndex == index then
+   if self.charIndex == index then
       return
    end
 
-   if self.playerCharIndex > 0 then
-      self:currentChar().highlighted = false
+   if self.charIndex > 0 then
+      self:char().highlighted = false
    end
 
-   self.playerChars[index].highlighted = true
-   self.playerCharIndex = index
+   self:char(index).highlighted = true
+   self.charIndex = index
 end
 
 function Scene:selectChar(index)
-   if self.playerCharIndex > 0 then
-      self:currentChar().selected = true
+   if self.charIndex > 0 then
+      self:char().selected = true
    end
 end
 
 function Scene:unselectChar(index)
-   if self.playerCharIndex > 0 then
-      local char = self:currentChar()
+   if self.charIndex > 0 then
+      local char = self:char()
       char.selected = false
       char.attacking = false
       char.moving = false
@@ -135,102 +137,110 @@ function Scene:unselectChar(index)
 end
 
 function Scene:nextChar()
-   if (self.playerCharIndex > 0 and self:currentChar().selected) or self:turnEnded() then
+   if (self:char() and self:char().selected) or self:turnEnded() then
       return
    end
 
-   local index = self.playerCharIndex
+   local index = self.charIndex
    repeat
-      index = index % table.getn(self.playerChars) + 1
-   until not self.playerChars[index]:turnDone()
+      index = index % table.getn(self:currentTeam()) + 1
+   until not self:char(index):turnDone()
    self:highlightChar(index)
-   self.camera:panTo(1, self:currentChar().x - self.camera.width / 2,
-                     self:currentChar().y - self.camera.height / 2)
+   self.camera:panTo(1, self:char().x - self.camera.width / 2,
+                     self:char().y - self.camera.height / 2)
 end
 
 function Scene:previousChar()
-   if (self.playerCharIndex > 0 and self:currentChar().selected) or self:turnEnded() then
+   if (self:char() and self:char().selected) or self:turnEnded() then
       return
    end
 
-   local index = self.playerCharIndex
+   local index = self.charIndex
    repeat
-      index = (index - 2) % table.getn(self.playerChars) + 1
-   until not self.playerChars[index]:turnDone()
+      index = (index - 2) % table.getn(self:currentTeam()) + 1
+   until not self:char(index):turnDone()
    self:highlightChar(index)
-   self.camera:panTo(1, self:currentChar().x - self.camera.width / 2,
-                     self:currentChar().y - self.camera.height / 2)
+   self.camera:panTo(1, self:char().x - self.camera.width / 2,
+                     self:char().y - self.camera.height / 2)
 end
 
 function Scene:targetTileUp()
    if not self:charSelected() then
       return
    end
-   self:currentChar():targetTileUp()
+   self:char():targetTileUp()
 end
 
 function Scene:targetTileDown()
    if not self:charSelected() then
       return
    end
-   self:currentChar():targetTileDown()
+   self:char():targetTileDown()
 end
 
 function Scene:targetTileLeft()
    if not self:charSelected() then
       return
    end
-   self:currentChar():targetTileLeft()
+   self:char():targetTileLeft()
 end
 
 function Scene:targetTileRight()
    if not self:charSelected() then
       return
    end
-   self:currentChar():targetTileRight()
+   self:char():targetTileRight()
 end
 
 function Scene:charSelected()
-   return self.playerCharIndex > 0 and self:currentChar().selected
+   return self:char() and self:char().selected
 end
 
 function Scene:charMoving()
-   return self.playerCharIndex > 0 and self:currentChar().moving
+   return self:char() and self:char().moving
 end
 
 function Scene:charAttacking()
-   return self.playerCharIndex > 0 and self:currentChar().attacking
+   return self:char() and self:char().attacking
 end
 
 function Scene:move()
    if not self:charSelected() then
       return
    end
-   self:currentChar():moveToTarget()
-   if self:currentChar():turnDone() then
+   self:char():moveToTarget()
+   if self:char():turnDone() then
       self:skip()
    end
 end
 
 function Scene:select()
-   if self.playerCharIndex == 0 then
+   if self.charIndex == 0 then
       return
    end
-   self:currentChar().selected = true
+   self:char().selected = true
 end
 
 function Scene:attack()
    if not self:charSelected() then
       return
    end
-   self:currentChar():attackTarget()
-   if self:currentChar():turnDone() then
+   self:char():attackTarget()
+   if self:char():turnDone() then
       self:skip()
    end
 end
 
+function Scene:currentTeam()
+   local chars = self.playerChars
+   if self.team == "Enemy" then
+      chars = self.cpuChars
+   end
+   return chars
+end
+
 function Scene:turnEnded()
-   for i, char in ipairs(self.playerChars) do
+   for i, char in ipairs(self:currentTeam()) do
       if not char:turnDone() then
          return false
       end
@@ -247,10 +257,10 @@ function Scene:nextTeam()
 end
 
 function Scene:skip()
-   if self.playerCharIndex == 0 then
+   if not self:char() then
       return
    end
-   self:currentChar():skip()
+   self:char():skip()
    if self:turnEnded() then
       self:nextTeam()
    else
@@ -258,38 +268,42 @@ function Scene:skip()
    end
 end
 
-function Scene:currentChar()
-   return self.playerChars[self.playerCharIndex]
+function Scene:char(index)
+   if self.team == "Player" then
+      return self.playerChars[index or self.charIndex]
+   else
+      return self.cpuChars[index or self.charIndex]
+   end
 end
 
 function Scene:charActing()
-   return self:currentChar():acting()
+   return self:char():acting()
 end
 
 function Scene:menuUp()
    if not self:charSelected() then
       return
    end
-   self:currentChar():menuUp()
+   self:char():menuUp()
 end
 
 function Scene:menuDown()
    if not self:charSelected() then
       return
    end
-   self:currentChar():menuDown()
+   self:char():menuDown()
 end
 
 function Scene:keyPressed(key, scancode,  isRepeat)
-   if key=="escape" and not isRepeat and self.playerCharIndex ~= 0 then
-      self:unselectChar(self.playerCharIndex)
-   elseif key=="up" and not isRepeat and self.playerCharIndex ~= 0 then
+   if key=="escape" and not isRepeat and self.charIndex ~= 0 then
+      self:unselectChar(self.charIndex)
+   elseif key=="up" and not isRepeat and self.charIndex ~= 0 then
       if self:charActing() then
          self:targetTileUp()
       else
          self:menuUp();
       end
-   elseif key=="down" and not isRepeat and self.playerCharIndex ~= 0 then
+   elseif key=="down" and not isRepeat and self.charIndex ~= 0 then
       if self:charActing() then
          self:targetTileDown()
       else
@@ -307,15 +321,15 @@ function Scene:keyPressed(key, scancode,  isRepeat)
       else
          self:nextChar()
       end
-   elseif key=="return" and not isRepeat and self.playerCharIndex ~= 0 then
+   elseif key=="return" and not isRepeat and self.charIndex ~= 0 then
       if not self:charSelected() then
          self:select();
       elseif self:charSelected() and not self:charActing() then
-         local action = self:currentChar():action()
+         local action = self:char():action()
          if action == 1 then
-            self:currentChar().moving = true
+            self:char().moving = true
          elseif action == 2 then
-            self:currentChar().attacking = true
+            self:char().attacking = true
          elseif action == 3 then
             self:skip()
          elseif action == 4 then
