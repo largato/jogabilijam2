@@ -2,7 +2,6 @@ require "entitymanager"
 require "stringhelper"
 
 local Map = require "libs/Simple-Tiled-Implementation/sti"
-local sodapop = require "libs/sodapop/sodapop"
 local Camera = require "camera"
 local Scene = require "scene"
 
