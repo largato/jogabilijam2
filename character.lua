@@ -20,8 +20,7 @@ function Character:new(map, layer, x, y, movement, attack)
    self.sprite = sodapop.newAnimatedSprite(self.x + map.tilewidth / 2, self.y + map.tileheight / 2)
    self.movement = movement or 3
    self.attack = attack or 1
-   self.moveMap = self:actionMap(self.movement)
-   self.attackMap = self:actionMap(self.attack)
+   self:updateMaps()
    self.targetTile = {x=self.tileX, y=self.tileY}
    self.moving = false -- show move map
    self.attacking = false -- show attack map
@@ -76,8 +75,7 @@ function Character:moveTo(tileX, tileY)
    self.y = tileY * self.map.tileheight
    self.sprite.x = self.x + self.map.tilewidth / 2
    self.sprite.y = self.y + self.map.tileheight / 2
-   self.moveMap = self:actionMap(self.movement)
-   self.attackMap = self:actionMap(self.attack)
+   self:resetUI()
    self.targetTile = {x=self.tileX, y=self.tileY}
    self.contextMenu.x = self.x
    self.contextMenu.y = self.y - self.contextMenu.height
@@ -140,7 +138,26 @@ function Character:drawMap(ox, oy, map, color, border)
    love.graphics.setColor(r, g, b, a)
 end
 
-function Character:actionMap(distance)
+function Character:layerHit(x, y)
+   return self.map.layers["Hitboxes"].data[y] ~= nil and
+          self.map.layers["Hitboxes"].data[y][x] ~= nil
+end
+
+function Character:updateMaps()
+   self.moveMap = self:actionMap("Movement", self.movement)
+   self.attackMap = self:actionMap("Attack", self.attack)
+end
+
+function Character:charHit(x, y)
+   for entity, v in pairs(manager:getEntities()) do
+      if x == entity.tileX and y == entity.tileY then
+         return true
+      end
+   end
+   return false
+end
+
+function Character:actionMap(action, distance)
    local q = Queue() -- bfs queue
    q:push({x=self.tileX, y=self.tileY})
 
@@ -159,7 +176,7 @@ function Character:actionMap(distance)
 
          d[newTile.x][newTile.y] = d[tile.x][tile.y] + 1
 
-         if d[newTile.x][newTile.y] <= distance then
+         if d[newTile.x][newTile.y] <= distance and not self:layerHit(newTile.x+1, newTile.y+1) then
             table.insert(moveMap, {x=newTile.x, y=newTile.y})
             q:push({x=newTile.x, y=newTile.y})
          end
@@ -183,6 +200,9 @@ function Character:moveToTarget()
    if self.targetTile.x == self.tileX and self.targetTile.y == self.tileY then
       return
    end
+   if self:charHit(self.targetTile.x, self.targetTile.y) then
+      return
+   end
    self:moveTo(self.targetTile.x, self.targetTile.y)
    self.moving = false
    self.moved = true
@@ -190,6 +210,9 @@ end
 
 function Character:attackTarget()
    if self.targetTile.x == self.tileX and self.targetTile.y == self.tileY then
+      return
+   end
+   if self:layerHit(self.targetTile.x+1, self.targetTile.y+1) then
       return
    end
    self.attacking = false
@@ -297,12 +320,13 @@ function Character:reset()
    self.attacking = false
    self.moved = false
    self.attacked = false
-   self:resetHUD()
+   self:resetUI()
 end
 
-function Character:resetHUD()
+function Character:resetUI()
    self.contextMenu.selectedLine = 1
    self.targetTile = {x=self.tileX, y=self.tileY}
+   self:updateMaps()
 end
 
 function Character:drawContextMenu(ox, oy)

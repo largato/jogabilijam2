@@ -152,7 +152,7 @@ function Scene:nextChar()
    self:highlightChar(index)
    self.camera:panTo(1, self:char().x - self.camera.width / 2,
                      self:char().y - self.camera.height / 2)
-   self:char():resetHUD()
+   self:char():resetUI()
 end
 
 function Scene:previousChar()
