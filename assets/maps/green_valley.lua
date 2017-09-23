@@ -281,7 +281,7 @@ return {
       objects = {
         {
           id = 2,
-          name = "Player-Hero1",
+          name = "Player-Saci",
           type = "",
           shape = "rectangle",
           x = 1384,
@@ -294,7 +294,7 @@ return {
         },
         {
           id = 4,
-          name = "Player-Hero2",
+          name = "Player-Loira",
           type = "",
           shape = "rectangle",
           x = 1449,
@@ -307,7 +307,7 @@ return {
         },
         {
           id = 5,
-          name = "Player-Hero3",
+          name = "Player-Loira",
           type = "",
           shape = "rectangle",
           x = 1544,
@@ -320,7 +320,7 @@ return {
         },
         {
           id = 6,
-          name = "Player-Hero4",
+          name = "Player-Cidadao",
           type = "",
           shape = "rectangle",
           x = 1638,
@@ -333,7 +333,7 @@ return {
         },
         {
           id = 7,
-          name = "CPU-Enemy1",
+          name = "CPU-Loira",
           type = "",
           shape = "ellipse",
           x = 1417,
@@ -346,7 +346,7 @@ return {
         },
         {
           id = 9,
-          name = "CPU-Enemy2",
+          name = "CPU-Loira",
           type = "",
           shape = "ellipse",
           x = 1481.5,
@@ -359,7 +359,7 @@ return {
         },
         {
           id = 10,
-          name = "CPU-Enemy3",
+          name = "CPU-Cidadao",
           type = "",
           shape = "ellipse",
           x = 1610.5,
@@ -372,7 +372,7 @@ return {
         },
         {
           id = 11,
-          name = "CPU-Enemy4",
+          name = "CPU-Saci",
           type = "",
           shape = "ellipse",
           x = 1673.5,

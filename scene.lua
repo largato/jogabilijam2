@@ -2,8 +2,11 @@ require "entitymanager"
 require "assets"
 
 local Object = require 'libs/classic/classic'
-local SampleChar = require "samplechar"
 local Behavior = require "libs/knife/knife/behavior"
+
+local Saci = require "saci"
+local Loira = require "loira"
+local Cidadao = require "cidadaodebem"
 
 Scene = Object:extend()
 Scene.currentScene = nil
@@ -16,8 +19,13 @@ function Scene:new(camera, map)
       local parts = object.name:split("-")
       local charType = parts[1]
       local charName = parts[2]
-      local char = SampleChar(map, object.layer, object.x, object.y, 96, charType, charName, 50, 30)
-      manager:add(char)
+      if charName == "Saci" then
+         manager:add(Saci(map, object.layer, object.x, object.y, 96, charType, charName, 50, 30))
+      elseif charName == "Loira" then
+         manager:add(Loira(map, object.layer, object.x, object.y, 96, charType, charName, 50, 30))
+      elseif charName == "Cidadao" then
+         manager:add(Cidadao(map, object.layer, object.x, object.y, 96, charType, charName, 50, 30))
+      end
    end
 
    self.playerChars = manager:getByType("Player")

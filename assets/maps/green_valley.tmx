@@ -212,20 +212,20 @@
 </data>
  </layer>
  <objectgroup name="Object Layer" visible="0">
-  <object id="2" name="Player-Hero1" x="1384" y="1642" width="16" height="16"/>
-  <object id="4" name="Player-Hero2" x="1449" y="1674" width="16" height="16"/>
-  <object id="5" name="Player-Hero3" x="1544" y="1643" width="16" height="16"/>
-  <object id="6" name="Player-Hero4" x="1638" y="1641" width="16" height="16"/>
-  <object id="7" name="CPU-Enemy1" x="1417" y="1322" width="16" height="16">
+  <object id="2" name="Player-Saci" x="1384" y="1642" width="16" height="16"/>
+  <object id="4" name="Player-Loira" x="1449" y="1674" width="16" height="16"/>
+  <object id="5" name="Player-Loira" x="1544" y="1643" width="16" height="16"/>
+  <object id="6" name="Player-Cidadao" x="1638" y="1641" width="16" height="16"/>
+  <object id="7" name="CPU-Loira" x="1417" y="1322" width="16" height="16">
    <ellipse/>
   </object>
-  <object id="9" name="CPU-Enemy2" x="1481.5" y="1355" width="16" height="16">
+  <object id="9" name="CPU-Loira" x="1481.5" y="1355" width="16" height="16">
    <ellipse/>
   </object>
-  <object id="10" name="CPU-Enemy3" x="1610.5" y="1355" width="16" height="16">
+  <object id="10" name="CPU-Cidadao" x="1610.5" y="1355" width="16" height="16">
    <ellipse/>
   </object>
-  <object id="11" name="CPU-Enemy4" x="1673.5" y="1387" width="16" height="16">
+  <object id="11" name="CPU-Saci" x="1673.5" y="1387" width="16" height="16">
    <ellipse/>
   </object>
  </objectgroup>
