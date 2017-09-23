@@ -1,4 +1,5 @@
 require "entitymanager"
+require "assets"
 
 local Object = require 'libs/classic/classic'
 local SampleChar = require "samplechar"
@@ -25,10 +26,10 @@ function Scene:new(camera, map)
    self.turn = 1
    self.team = "Player"
 
-   local scaleFactor = love.graphics.getWidth()/1280
-   self.titleFont = love.graphics.newFont('assets/fonts/dpcomic.ttf', 36*scaleFactor)
-   self.charNameFont = love.graphics.newFont('assets/fonts/dpcomic.ttf', 26*scaleFactor)
-   self.menuItemFont = love.graphics.newFont('assets/fonts/dpcomic.ttf', 20*scaleFactor)
+   local scaleFactor = assets.config.screen.scaleFactor
+   self.titleFont = assets.fonts.dpcomic(assets.config.fonts.titleHeight * scaleFactor)
+   self.charNameFont = assets.fonts.dpcomic(assets.config.fonts.charNameHeight * scaleFactor)
+   self.menuItemFont = assets.fonts.dpcomic(assets.config.fonts.menuItemHeight * scaleFactor)
 
    self:nextChar()
 end
