@@ -13,3 +13,6 @@
 [submodule "libs/knife"]
 	path = libs/knife
 	url = https://github.com/airstruck/knife.git
+[submodule "libs/cargo"]
+	path = libs/cargo
+	url = https://github.com/bjornbytes/cargo.git
