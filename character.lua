@@ -1,11 +1,12 @@
+require "assets"
+
 local sodapop = require "libs/sodapop/sodapop"
 local Object = require "libs/classic/classic"
 local Queue = require "queue"
 
 Character = Object:extend()
--- TODO: move resource handling from scene and character to another class
-local scaleFactor = love.graphics.getWidth()/1280
-Character.menuItemFont = love.graphics.newFont('assets/fonts/dpcomic.ttf', 20*scaleFactor)
+Character.menuItemFont = assets.fonts.dpcomic(assets.config.fonts.menuItemHeight *
+                                              assets.config.screen.scaleFactor)
 
 function Character:new(map, layer, x, y, movement, attack)
    self.map = map
