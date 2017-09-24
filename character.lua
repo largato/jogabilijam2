@@ -98,7 +98,8 @@ function Character:moveToTarget()
    if self:actionMap().target.x == self.tileX and self:actionMap().target.y == self.tileY then
       return
    end
-   if self:charHit(self:actionMap().target.x, self:actionMap().target.y) then
+   local hit = self:charHit(self:actionMap().target.x, self:actionMap().target.y)
+   if hit and not hit:dead() then
       return
    end
    self:moveTo(self:actionMap().target.x, self:actionMap().target.y)

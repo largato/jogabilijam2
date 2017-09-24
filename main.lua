@@ -5,6 +5,7 @@ require "scenemanager"
 local Map = require "libs/Simple-Tiled-Implementation/sti"
 local Camera = require "camera"
 local Scene = require "scene"
+local EndScene = require "endscene"
 
 local debugMode = true
 local width = 1280
@@ -15,6 +16,8 @@ function love.load()
 
    local map = Map("assets/maps/green_valley.lua")
    sceneManager:add("battle", Scene(Camera(width, height), map))
+   sceneManager:add("PlayerWon", EndScene("Jogador"))
+   sceneManager:add("EnemyWon", EndScene("Inimigo"))
    sceneManager:setCurrent("battle")
 end
 
