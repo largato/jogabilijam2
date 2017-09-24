@@ -1,7 +1,8 @@
-name:Saci
-hp:50
-mp:30
-speed:96
-movement:2
-attack:1
+name: Saci
+hp: 50
+mp: 30
+speed: 96
+movement: 2
+attack: 1
+portrait: assets/images/saci_portrait.png
 animation.idle: { image = love.graphics.newImage 'assets/images/saci.png', frameWidth=26, frameHeight=34, stopAtEnd=false, frames={ {1, 1, 4, 1, .4} } }
