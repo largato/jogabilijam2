@@ -325,14 +325,14 @@ function Scene:menuUp()
    if not self:charSelected() then
       return
    end
-   self:char():menuUp()
+   self:char().actionMenu:menuUp()
 end
 
 function Scene:menuDown()
    if not self:charSelected() then
       return
    end
-   self:char():menuDown()
+   self:char().actionMenu:menuDown()
 end
 
 function Scene:startEnemyTurn()
@@ -433,7 +433,7 @@ function Scene:keyPressed(key, scancode,  isRepeat)
       end
    elseif key=="return" and not isRepeat and self.charIndex ~= 0 then
       if not self:charSelected() then
-         self:select();
+         self:select()
       elseif self:charSelected() and not self:charActing() then
          local action = self:char():action()
          if action == 1 then
