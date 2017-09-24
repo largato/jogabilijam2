@@ -9,7 +9,7 @@ Character = Object:extend()
 Character.menuItemFont = assets.fonts.dpcomic(assets.config.fonts.menuItemHeight *
                                               assets.config.screen.scaleFactor)
 
-function Character:new(map, x, y, movement, attack)
+function Character:new(map, x, y, movement, attack, damage)
    self.map = map
    self.tileX = math.floor(x / map.tilewidth)
    self.tileY = math.floor(y / map.tileheight)
@@ -87,10 +87,10 @@ end
 function Character:charHit(x, y)
    for entity, v in pairs(manager:getEntities()) do
       if x == entity.tileX and y == entity.tileY then
-         return true
+         return entity
       end
    end
-   return false
+   return nil
 end
 
 function Character:moveToTarget()
@@ -110,7 +110,9 @@ function Character:attackTarget()
       return
    end
 
-   if not self:charHit(self:actionMap().target.x, self:actionMap().target.y) then
+   local hit = self:charHit(self:actionMap().target.x, self:actionMap().target.y)
+
+   if not hit then
       return
    end
 
@@ -118,7 +120,8 @@ function Character:attackTarget()
    self.attacked = true
 
    self.actionMenu:select(1)
-   -- TODO: attack and unset attacking property
+
+   hit.HP = hit.HP - self.damage
 end
 
 function Character:turnDone()
