@@ -2,8 +2,8 @@ require "assets"
 
 local sodapop = require "libs/sodapop/sodapop"
 local Object = require "libs/classic/classic"
-local Queue = require "queue"
 local ActionMenu = require "actionmenu"
+local ActionMap = require "actionmap"
 
 Character = Object:extend()
 Character.menuItemFont = assets.fonts.dpcomic(assets.config.fonts.menuItemHeight *
@@ -20,13 +20,13 @@ function Character:new(map, x, y, movement, attack)
    self.sprite = sodapop.newAnimatedSprite(self.x + map.tilewidth / 2, self.y + map.tileheight / 2)
    self.movement = movement or 3
    self.attack = attack or 1
-   self:updateMaps()
-   self.targetTile = {x=self.tileX, y=self.tileY}
    self.moving = false -- show move map
    self.attacking = false -- show attack map
    self.moved = false
    self.attacked = false
    self.actionMenu = ActionMenu(self, 4, 4, map.tilewidth, map.tileheight)
+   self.moveMap = ActionMap(self.movement, self.tileX, self.tileY, map, {0, 255, 255, 64}, {0, 255, 255, 100})
+   self.attackMap = ActionMap(self.attack, self.tileX, self.tileY, map, {255, 0, 0, 64}, {255, 0, 0, 100})
 
    self:load()
 end
@@ -50,11 +50,9 @@ function Character:draw(ox, oy)
       self:drawHighlight(ox, oy)
    end
    if self.moving then
-      self:drawMap(ox, oy, self.moveMap, {0, 255, 255, 64}, {0, 255, 255, 100})
-      self:drawTargetTile(ox, oy)
+      self.moveMap:draw(ox, oy)
    elseif self.attacking then
-      self:drawMap(ox, oy, self.attackMap, {255, 0, 0, 64}, {255, 0, 0, 100})
-      self:drawTargetTile(ox, oy)
+      self.attackMap:draw(ox, oy)
    elseif self.selected then
       self.actionMenu:draw(ox, oy)
    end
@@ -69,7 +67,6 @@ function Character:moveTo(tileX, tileY)
    self.sprite.x = self.x + self.map.tilewidth / 2
    self.sprite.y = self.y + self.map.tileheight / 2
    self:resetUI()
-   self.targetTile = {x=self.tileX, y=self.tileY}
    self.actionMenu:move(self.x, self.y)
    self.actionMenu:select(2)
 end
@@ -87,59 +84,6 @@ function Character:drawHighlight(ox, oy)
    love.graphics.setColor(r, g, b, a)
 end
 
-function Character:drawTargetTile(ox, oy)
-   local r, g, b, a = love.graphics.getColor()
-   love.graphics.setColor(255, 0, 0, 150)
-   love.graphics.rectangle('fill', self.targetTile.x * self.map.tilewidth - ox,
-                           self.targetTile.y * self.map.tileheight - oy,
-                           self.map.tilewidth, self.map.tileheight,
-                           self.map.tilewidth / 4, self.map.tileheight / 4)
-   love.graphics.setColor(255, 0, 0, 200)
-   love.graphics.rectangle('line', self.targetTile.x * self.map.tilewidth - ox,
-                           self.targetTile.y * self.map.tileheight - oy,
-                           self.map.tilewidth, self.map.tileheight,
-                           self.map.tilewidth / 4, self.map.tileheight / 4)
-   love.graphics.setColor(r, g, b, a)
-end
-
--- run a BFS to draw possible movement positions
--- TODO: check positions for another characters or tiled collidable map objects
-function Character:drawMap(ox, oy, map, color, border)
-   local r, g, b, a = love.graphics.getColor()
-
-   for i, tile in ipairs(map) do
-      love.graphics.setColor(unpack(color))
-      love.graphics.rectangle('fill',
-                              tile.x * self.map.tilewidth - ox,
-                              tile.y * self.map.tileheight - oy,
-                              self.map.tilewidth,
-                              self.map.tileheight,
-                              self.map.tilewidth / 4,
-                              self.map.tileheight / 4)
-
-      love.graphics.setColor(unpack(border))
-      love.graphics.rectangle('line',
-                              tile.x * self.map.tilewidth - ox,
-                              tile.y * self.map.tileheight - oy,
-                              self.map.tilewidth,
-                              self.map.tileheight,
-                              self.map.tilewidth / 4,
-                              self.map.tileheight / 4)
-   end
-
-   love.graphics.setColor(r, g, b, a)
-end
-
-function Character:layerHit(x, y)
-   return self.map.layers["Hitboxes"].data[y] ~= nil and
-          self.map.layers["Hitboxes"].data[y][x] ~= nil
-end
-
-function Character:updateMaps()
-   self.moveMap = self:actionMap("Movement", self.movement)
-   self.attackMap = self:actionMap("Attack", self.attack)
-end
-
 function Character:charHit(x, y)
    for entity, v in pairs(manager:getEntities()) do
       if x == entity.tileX and y == entity.tileY then
@@ -149,62 +93,20 @@ function Character:charHit(x, y)
    return false
 end
 
-function Character:actionMap(action, distance)
-   local q = Queue() -- bfs queue
-   q:push({x=self.tileX, y=self.tileY})
-
-   local d = {} -- distance map
-   d[self.tileX] = {}
-   d[self.tileX][self.tileY] = 0
-
-   local moveMap = {}
-   table.insert(moveMap, {x=self.tileX, y=self.tileY})
-
-   local function tadd(q, d, tile, newTile)
-      if d[newTile.x] == nil or d[newTile.x][newTile.y] == nil then
-         if d[newTile.x] == nil then
-            d[newTile.x] = {}
-         end
-
-         d[newTile.x][newTile.y] = d[tile.x][tile.y] + 1
-
-         if d[newTile.x][newTile.y] <= distance and not self:layerHit(newTile.x+1, newTile.y+1) then
-            table.insert(moveMap, {x=newTile.x, y=newTile.y})
-            q:push({x=newTile.x, y=newTile.y})
-         end
-      end
-   end
-
-   while not q:empty() do
-      local tile = q:pop()
-      if tile.x >= 0 and tile.y >= 0 and tile.x <= self.map.width and tile.y <= self.map.height then
-         tadd(q, d, tile, {x=tile.x - 1, y = tile.y})
-         tadd(q, d, tile, {x=tile.x + 1, y = tile.y})
-         tadd(q, d, tile, {x=tile.x, y = tile.y - 1})
-         tadd(q, d, tile, {x=tile.x, y = tile.y + 1})
-      end
-   end
-
-   return moveMap
-end
-
 function Character:moveToTarget()
-   if self.targetTile.x == self.tileX and self.targetTile.y == self.tileY then
+   if self:actionMap().target.x == self.tileX and self:actionMap().target.y == self.tileY then
       return
    end
-   if self:charHit(self.targetTile.x, self.targetTile.y) then
+   if self:charHit(self:actionMap().target.x, self:actionMap().target.y) then
       return
    end
-   self:moveTo(self.targetTile.x, self.targetTile.y)
+   self:moveTo(self:actionMap().target.x, self:actionMap().target.y)
    self.moving = false
    self.moved = true
 end
 
 function Character:attackTarget()
-   if self.targetTile.x == self.tileX and self.targetTile.y == self.tileY then
-      return
-   end
-   if self:layerHit(self.targetTile.x+1, self.targetTile.y+1) then
+   if self:actionMap().target.x == self.tileX and self:actionMap().target.y == self.tileY then
       return
    end
    self.attacking = false
@@ -212,49 +114,6 @@ function Character:attackTarget()
 
    self.actionMenu:select(1)
    -- TODO: attack and unset attacking property
-end
-
-function Character:targetExists(target)
-   local map = nil
-   if self.moving then
-      map = self.moveMap
-   else
-      map = self.attackMap
-   end
-   for i, tile in ipairs(map) do
-      if tile.x == target.x and tile.y == target.y then
-         return true
-      end
-   end
-   return false
-end
-
-function Character:targetTileUp()
-   local newTarget = {x=self.targetTile.x, y=self.targetTile.y - 1}
-   if self:targetExists(newTarget) then
-      self.targetTile = newTarget
-   end
-end
-
-function Character:targetTileDown()
-   local newTarget = {x=self.targetTile.x, y=self.targetTile.y + 1}
-   if self:targetExists(newTarget) then
-      self.targetTile = newTarget
-   end
-end
-
-function Character:targetTileLeft()
-   local newTarget = {x=self.targetTile.x - 1, y=self.targetTile.y}
-   if self:targetExists(newTarget) then
-      self.targetTile = newTarget
-   end
-end
-
-function Character:targetTileRight()
-   local newTarget = {x=self.targetTile.x + 1, y=self.targetTile.y}
-   if self:targetExists(newTarget) then
-      self.targetTile = newTarget
-   end
 end
 
 function Character:turnDone()
@@ -278,6 +137,22 @@ function Character:acting()
    return self.moving or self.attacking
 end
 
+function Character:unselect()
+   self.selected = false
+   self.attacking = false
+   self.moving = false
+   self.moveMap:setTarget(self.tileX, self.tileY)
+   self.attackMap:setTarget(self.tileX, self.tileY)
+end
+
+function Character:actionMap()
+   if self.moving then
+      return self.moveMap
+   elseif self.attacking then
+      return self.attackMap
+   end
+end
+
 function Character:reset()
    self.selected = false
    self.moving = false
@@ -289,8 +164,10 @@ end
 
 function Character:resetUI()
    self.actionMenu:select(1)
-   self.targetTile = {x=self.tileX, y=self.tileY}
-   self:updateMaps()
+   self.moveMap:move(self.tileX, self.tileY)
+   self.attackMap:move(self.tileX, self.tileY)
+   self.moveMap:setTarget(self.tileX, self.tileY)
+   self.attackMap:setTarget(self.tileX, self.tileY)
 end
 
 return Character

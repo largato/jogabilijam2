@@ -151,18 +151,14 @@ function Scene:highlightChar(index)
 end
 
 function Scene:selectChar(index)
-   if self.charIndex > 0 then
+   if self:char() ~= nil then
       self:char().selected = true
    end
 end
 
 function Scene:unselectChar(index)
-   if self.charIndex > 0 then
-      local char = self:char()
-      char.selected = false
-      char.attacking = false
-      char.moving = false
-      char.targetTile = {x=char.tileX, y=char.tileY}
+   if self:char() ~= nil then
+      self:char():unselect()
    end
 end
 
@@ -199,28 +195,28 @@ function Scene:targetTileUp()
    if not self:charSelected() then
       return
    end
-   self:char():targetTileUp()
+   self:char():actionMap():targetUp()
 end
 
 function Scene:targetTileDown()
    if not self:charSelected() then
       return
    end
-   self:char():targetTileDown()
+   self:char():actionMap():targetDown()
 end
 
 function Scene:targetTileLeft()
    if not self:charSelected() then
       return
    end
-   self:char():targetTileLeft()
+   self:char():actionMap():targetLeft()
 end
 
 function Scene:targetTileRight()
    if not self:charSelected() then
       return
    end
-   self:char():targetTileRight()
+   self:char():actionMap():targetRight()
 end
 
 function Scene:charSelected()
@@ -446,9 +442,9 @@ function Scene:keyPressed(key, scancode,  isRepeat)
             self:unselectChar()
          end
       elseif self:charMoving() then
-         self:move();
+         self:move()
       elseif self:charAttacking() then
-         self:attack();
+         self:attack()
       end
    end
 end
