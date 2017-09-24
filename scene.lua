@@ -19,13 +19,7 @@ function Scene:new(camera, map)
       local parts = object.name:split("-")
       local charType = parts[1]
       local charName = parts[2]
-      if charName == "Saci" then
-         manager:add(Saci(map, object.layer, object.x, object.y, 96, charType, charName, 50, 30))
-      elseif charName == "Loira" then
-         manager:add(Loira(map, object.layer, object.x, object.y, 96, charType, charName, 50, 30))
-      elseif charName == "Cidadao" then
-         manager:add(Cidadao(map, object.layer, object.x, object.y, 96, charType, charName, 50, 30))
-      end
+      manager:add(Scene:loadCharFromScript(charName, map, object.x, object.y), charType)
    end
 
    self.playerChars = manager:getByType("Player")
@@ -40,6 +34,30 @@ function Scene:new(camera, map)
    self.menuItemFont = assets.fonts.dpcomic(assets.config.fonts.menuItemHeight * scaleFactor)
 
    self:nextChar()
+end
+
+function Scene:loadCharFromScript(charName, map, x, y)
+   print(charName, map, x, y)
+   local character = Character(map, x, y)
+   local script = io.open("assets/scripts/chars/"..charName:lower()..".char", "r"):read("*all")
+   local lines = script:split('\n')
+   for lineNum, line in ipairs(lines) do
+      local parts = line:split(':')
+      local key = parts[1]:lower()
+      local value = parts[2]
+      if key=='name' then character.name = value
+      elseif key=='hp' then character.HP = tonumber(value); character.originalHP = tonumber(value)
+      elseif key=='mp' then character.MP = tonumber(value); character.originalMP = tonumber(value)
+      elseif key=='speed' then character.speed = tonumber(value)
+      elseif key=='movement' then character.movement = tonumber(value)
+      elseif key=='attack' then character.attack = tonumber(value)
+      elseif key:starts('animation') then
+         local subparts = key:split('.')
+         local func = assert(loadstring("return " .. value))
+         character.sprite:addAnimation(subparts[2], func())
+      end
+   end
+   return character
 end
 
 function Scene:setCamera(c)

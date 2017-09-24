@@ -7,25 +7,25 @@ function EntityManager:new()
    self.entitiesByType = {}
 end
 
-function EntityManager:add(entity)
+function EntityManager:add(entity, entityType)
    self.entities[entity] = true
 
-   if self.entitiesByType[entity.type] == nil then
-      self.entitiesByType[entity.type] = {}
+   if self.entitiesByType[entityType] == nil then
+      self.entitiesByType[entityType] = {}
    end
 
-   table.insert(self.entitiesByType[entity.type], entity)
+   table.insert(self.entitiesByType[entityType], entity)
 end
 
-function EntityManager:remove(entity)
+function EntityManager:remove(entity, entityType)
    if self.entities[entity] == nil then
       return
    end
 
    self.entities[entity] = nil
-   for i, v in ipairs(self.entitiesByType[entity.type]) do
+   for i, v in ipairs(self.entitiesByType[entityType]) do
       if v == entity then
-         table.remove(self.entitiesByType[entity.type], i)
+         table.remove(self.entitiesByType[entityType], i)
          break
       end
    end
