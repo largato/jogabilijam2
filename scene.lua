@@ -259,6 +259,12 @@ function Scene:attack()
       return
    end
    self:char():attackTarget()
+
+   if self:playerWon() then
+      sceneManager:setCurrent("PlayerWon")
+      return
+   end
+
    if self:char():turnDone() then
       self:skip()
    end
@@ -388,6 +394,11 @@ end
 
 function Scene:enemyAttack(scene)
    scene:attack()
+
+   if scene:enemyWon() then
+      sceneManager:setCurrent("EnemyWon")
+      return
+   end
 end
 
 function Scene:enemyCheckEnd(scene)
@@ -403,6 +414,23 @@ function Scene:enemySelect(scene)
       scene:nextChar()
    end
    scene:char().selected = true
+end
+
+function Scene:playerWon()
+   return self:teamLost("CPU")
+end
+
+function Scene:enemyWon()
+   return self:teamLost("Player")
+end
+
+function Scene:teamLost(team)
+   for k, char in ipairs(manager:getByType(team)) do
+      if not char:dead() then
+         return false
+      end
+   end
+   return true
 end
 
 function Scene:keyPressed(key, scancode,  isRepeat)
