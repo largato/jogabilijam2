@@ -109,6 +109,11 @@ function Character:attackTarget()
    if self:actionMap().target.x == self.tileX and self:actionMap().target.y == self.tileY then
       return
    end
+
+   if not self:charHit(self:actionMap().target.x, self:actionMap().target.y) then
+      return
+   end
+
    self.attacking = false
    self.attacked = true
 

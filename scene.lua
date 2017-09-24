@@ -368,7 +368,9 @@ function Scene:enemySetDestination(scene)
 end
 
 function Scene:enemySetAttacking(scene)
-   scene:char().attacking = true
+   -- TODO: check if it can attack
+   scene:skip()
+   -- scene:char().attacking = true
 end
 
 function Scene:enemySetAttackTarget(scene)
