@@ -41,6 +41,12 @@ function Character:draw(ox, oy)
    if self.sprite == nil then
       return
    end
+
+   if self:dead() then
+      -- TODO: add death animation
+      return
+   end
+
    if self.highlighted then
       self:drawHighlight(ox, oy)
    end
@@ -119,8 +125,12 @@ function Character:attackTarget()
    hit.HP = hit.HP - self.damage
 end
 
+function Character:dead()
+   return self.HP <= 0
+end
+
 function Character:turnDone()
-   return self.moved and self.attacked
+   return (self.moved and self.attacked) or self:dead()
 end
 
 function Character:skip()
