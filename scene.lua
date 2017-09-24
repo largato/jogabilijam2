@@ -48,6 +48,7 @@ function Scene:loadCharFromScript(charName, map, x, y)
       elseif key=='movement' then character.movement = tonumber(value)
       elseif key=='attack' then character.attack = tonumber(value)
       elseif key=='portrait' then character.portrait = love.graphics.newImage(value)
+      elseif key=='damage' then character.damage = tonumber(value)
       elseif key:starts('animation') then
          local subparts = key:split('.')
          local func = assert(loadstring("return " .. value))
