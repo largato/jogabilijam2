@@ -1,4 +1,5 @@
 require "entitymanager"
+require "scenemanager"
 require "assets"
 
 local Object = require 'libs/classic/classic'
@@ -9,7 +10,6 @@ local Loira = require "loira"
 local Cidadao = require "cidadaodebem"
 
 Scene = Object:extend()
-Scene.currentScene = nil
 
 function Scene:new(camera, map)
    self.map = map
@@ -454,7 +454,7 @@ function Scene:keyPressed(key, scancode,  isRepeat)
 end
 
 function love.keypressed(key, scancode, isRepeat)
-   Scene.currentScene:keyPressed(key, scancode, isRepeat)
+   sceneManager.current:keyPressed(key, scancode, isRepeat)
 end
 
 return Scene
