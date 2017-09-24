@@ -1,5 +1,6 @@
 require "entitymanager"
 require "stringhelper"
+require "scenemanager"
 
 local Map = require "libs/Simple-Tiled-Implementation/sti"
 local Camera = require "camera"
@@ -13,18 +14,19 @@ function love.load()
    love.window.setMode(width, height)
 
    local map = Map("assets/maps/green_valley.lua")
-   Scene.currentScene = Scene(Camera(width, height), map)
+   sceneManager:add("battle", Scene(Camera(width, height), map))
+   sceneManager:setCurrent("battle")
 end
 
 function love.update(dt)
    if dt < 1/30 then
       love.timer.sleep(1/30 - dt)
    end
-   Scene.currentScene:update(dt)
+   sceneManager:update(dt)
 end
 
 function love.draw()
-   Scene.currentScene:draw()
+   sceneManager:draw()
    if debugMode then
       drawDebugInfo()
    end
