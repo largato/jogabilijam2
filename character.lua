@@ -18,21 +18,16 @@ function Character:new(map, x, y, movement, attack, damage)
    self.highlighted = false
    self.selected = false
    self.sprite = sodapop.newAnimatedSprite(self.x + map.tilewidth / 2, self.y + map.tileheight / 2)
-   self.movement = movement or 3
-   self.attack = attack or 1
    self.moving = false -- show move map
    self.attacking = false -- show attack map
    self.moved = false
    self.attacked = false
    self.actionMenu = ActionMenu(self, 4, 4, map.tilewidth, map.tileheight)
-   self.moveMap = ActionMap(self.movement, self.tileX, self.tileY, map, {0, 255, 255, 64}, {0, 255, 255, 100})
-   self.attackMap = ActionMap(self.attack, self.tileX, self.tileY, map, {255, 0, 0, 64}, {255, 0, 0, 100})
-
-   self:load()
 end
 
-function Character:load()
-   -- create animations here
+function Character:createMaps()
+   self.moveMap = ActionMap(self.movement, self.tileX, self.tileY, self.map, {0, 255, 255, 64}, {0, 255, 255, 100})
+   self.attackMap = ActionMap(self.attack, self.tileX, self.tileY, self.map, {255, 0, 0, 64}, {255, 0, 0, 100})
 end
 
 function Character:update(dt)
