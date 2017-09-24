@@ -8,9 +8,8 @@ Character = Object:extend()
 Character.menuItemFont = assets.fonts.dpcomic(assets.config.fonts.menuItemHeight *
                                               assets.config.screen.scaleFactor)
 
-function Character:new(map, layer, x, y, movement, attack)
+function Character:new(map, x, y, movement, attack)
    self.map = map
-   self.layer = layer
    self.tileX = math.floor(x / map.tilewidth)
    self.tileY = math.floor(y / map.tileheight)
    self.x = self.tileX * map.tilewidth
