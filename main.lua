@@ -6,8 +6,8 @@ local Camera = require "camera"
 local Scene = require "scene"
 
 local debugMode = true
-local width = 1920
-local height = 1080
+local width = 1280
+local height = 720
 
 function love.load()
    love.window.setMode(width, height)
