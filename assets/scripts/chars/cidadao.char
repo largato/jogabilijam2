@@ -1,7 +1,8 @@
-name:Homem de bem
-hp:50
-mp:30
-speed:96
-movement:1
-attack:5
+name: Homem de bem
+hp: 50
+mp: 30
+speed: 96
+movement: 1
+attack: 5
+portrait: assets/images/cidadao_portrait.png
 animation.idle: { image = love.graphics.newImage 'assets/images/homidebem.png', frameWidth=26, frameHeight=34, stopAtEnd=false, frames={ {1, 1, 4, 1, .4} } }

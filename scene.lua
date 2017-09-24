@@ -40,13 +40,14 @@ function Scene:loadCharFromScript(charName, map, x, y)
    for lineNum, line in ipairs(lines) do
       local parts = line:split(':')
       local key = parts[1]:lower()
-      local value = parts[2]
+      local value = parts[2]:gsub("%s+", "")
       if key=='name' then character.name = value
       elseif key=='hp' then character.HP = tonumber(value); character.originalHP = tonumber(value)
       elseif key=='mp' then character.MP = tonumber(value); character.originalMP = tonumber(value)
       elseif key=='speed' then character.speed = tonumber(value)
       elseif key=='movement' then character.movement = tonumber(value)
       elseif key=='attack' then character.attack = tonumber(value)
+      elseif key=='portrait' then character.portrait = love.graphics.newImage(value)
       elseif key:starts('animation') then
          local subparts = key:split('.')
          local func = assert(loadstring("return " .. value))
@@ -106,11 +107,16 @@ function Scene:drawHUD(ox, oy)
       local charHP = self:char().HP.."/"..self:char().originalHP
       local charMP = self:char().MP.."/"..self:char().originalMP
 
+      -- character sheet frame --
       love.graphics.setColor(0, 0, 255, 128)
       love.graphics.rectangle('fill', charSheetX, charSheetY, charSheetWidth, charSheetHeight)
-      love.graphics.setColor(255, 0, 0, 255)
-      love.graphics.rectangle('fill', charPicX, charPicY, charPicWidth, charPicHeight)
       love.graphics.setColor(255, 255, 255, 255)
+      -- character portrait --
+      love.graphics.setColor(r, g, b, a)
+      local portraitXScale = charPicWidth/self:char().portrait:getWidth()
+      local portraitYScale = charPicHeight/self:char().portrait:getHeight()
+      love.graphics.draw(self:char().portrait, charPicX, charPicY, 0, portraitXScale, portraitYScale)
+      -- character name and status --
       love.graphics.setFont(self.charNameFont)
       love.graphics.printf(charName, charNameX, charNameY, charSheetWidth, 'center')
       love.graphics.setFont(self.menuItemFont)
