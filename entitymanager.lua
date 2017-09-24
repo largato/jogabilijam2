@@ -49,9 +49,6 @@ function EntityManager:draw(ox, oy)
    for entity in pairs(self.entities) do
       entity:draw(ox, oy)
    end
-   for entity in pairs(self.entities) do
-      entity:drawHUD(ox, oy)
-   end
 end
 
 manager = EntityManager()

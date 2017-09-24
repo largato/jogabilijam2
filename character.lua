@@ -3,6 +3,7 @@ require "assets"
 local sodapop = require "libs/sodapop/sodapop"
 local Object = require "libs/classic/classic"
 local Queue = require "queue"
+local ActionMenu = require "actionmenu"
 
 Character = Object:extend()
 Character.menuItemFont = assets.fonts.dpcomic(assets.config.fonts.menuItemHeight *
@@ -25,15 +26,7 @@ function Character:new(map, x, y, movement, attack)
    self.attacking = false -- show attack map
    self.moved = false
    self.attacked = false
-
-   local menuTileSize = {width = 4, height = 4}
-   local menuSize = {width = menuTileSize.width * self.map.tilewidth,
-                     height = menuTileSize.height * self.map.tileheight}
-
-   self.contextMenu = {x = self.x, y = self.y - menuSize.height,
-                       width = menuSize.width, height = menuSize.height}
-
-   self.contextMenu.selectedLine = 1
+   self.actionMenu = ActionMenu(self, 4, 4, map.tilewidth, map.tileheight)
 
    self:load()
 end
@@ -59,10 +52,11 @@ function Character:draw(ox, oy)
    if self.moving then
       self:drawMap(ox, oy, self.moveMap, {0, 255, 255, 64}, {0, 255, 255, 100})
       self:drawTargetTile(ox, oy)
-   end
-   if self.attacking then
+   elseif self.attacking then
       self:drawMap(ox, oy, self.attackMap, {255, 0, 0, 64}, {255, 0, 0, 100})
       self:drawTargetTile(ox, oy)
+   elseif self.selected then
+      self.actionMenu:draw(ox, oy)
    end
    self.sprite:draw(ox, oy)
 end
@@ -76,9 +70,8 @@ function Character:moveTo(tileX, tileY)
    self.sprite.y = self.y + self.map.tileheight / 2
    self:resetUI()
    self.targetTile = {x=self.tileX, y=self.tileY}
-   self.contextMenu.x = self.x
-   self.contextMenu.y = self.y - self.contextMenu.height
-   self.contextMenu.selectedLine = 2
+   self.actionMenu:move(self.x, self.y)
+   self.actionMenu:select(2)
 end
 
 function Character:drawHighlight(ox, oy)
@@ -217,7 +210,7 @@ function Character:attackTarget()
    self.attacking = false
    self.attacked = true
 
-   self.contextMenu.selectedLine = 1
+   self.actionMenu:select(1)
    -- TODO: attack and unset attacking property
 end
 
@@ -277,40 +270,12 @@ function Character:skip()
    self.selected = false
 end
 
-function Character:menuDown()
-   local line = self.contextMenu.selectedLine
-   line = line % 4 + 1
-   if (line == 1 and self.moved) or (line == 2 and self.attacked) then
-      line = line % 4 + 1
-   end
-   self.contextMenu.selectedLine = line
-end
-
-function Character:menuUp()
-   local line = self.contextMenu.selectedLine
-   line = (line - 2) % 4 + 1
-   if (line == 1 and self.moved) or (line == 2 and self.attacked) then
-      line = (line - 2) % 4 + 1
-   end
-   self.contextMenu.selectedLine = line
-end
-
 function Character:action()
-   return self.contextMenu.selectedLine
+   return self.actionMenu.line
 end
 
 function Character:acting()
    return self.moving or self.attacking
-end
-
-function Character:drawHUD(ox, oy)
-   if not self.selected then
-      return
-   end
-
-   if not self:acting() then
-      self:drawContextMenu(ox, oy)
-   end
 end
 
 function Character:reset()
@@ -323,63 +288,9 @@ function Character:reset()
 end
 
 function Character:resetUI()
-   self.contextMenu.selectedLine = 1
+   self.actionMenu:select(1)
    self.targetTile = {x=self.tileX, y=self.tileY}
    self:updateMaps()
-end
-
-function Character:drawContextMenu(ox, oy)
-   local r, g, b, a = love.graphics.getColor()
-   -- menu window --
-   love.graphics.setColor(173, 173, 173, 80)
-   love.graphics.rectangle('fill', self.contextMenu.x - ox, self.contextMenu.y - oy,
-                           self.contextMenu.width, self.contextMenu.height,
-                           self.contextMenu.width / 8, self.contextMenu.height / 8)
-   love.graphics.rectangle('line', self.contextMenu.x - ox, self.contextMenu.y - oy,
-                           self.contextMenu.width, self.contextMenu.height,
-                           self.contextMenu.width / 8, self.contextMenu.height / 8)
-
-   -- menu items --
-   self:drawContextMenuLine(1, "Mover", ox, oy)
-   self:drawContextMenuLine(2, "Atacar", ox, oy)
-   self:drawContextMenuLine(3, "Terminar", ox, oy)
-   self:drawContextMenuLine(4, "Cancelar", ox, oy)
-
-   love.graphics.setColor(r, g, b, a)
-end
-
-function Character:drawContextMenuLine(line, text, ox, oy)
-   local r, g, b, a = love.graphics.getColor()
-
-   love.graphics.setColor(173, 173, 173, 80)
-
-   if line == self.contextMenu.selectedLine then
-      love.graphics.setColor(179, 211, 173, 200)
-   elseif (line == 1 and self.moved) or (line == 2 and self.attacked) then
-      love.graphics.setColor(75, 75, 75, 200)
-   end
-
-   love.graphics.rectangle('fill', self.contextMenu.x - ox, self.contextMenu.y + (line - 1) * self.map.tileheight  - oy,
-                           self.contextMenu.width, self.map.tileheight,
-                           self.contextMenu.width / 8, self.map.height / 8)
-
-   love.graphics.rectangle('line', self.contextMenu.x - ox, self.contextMenu.y + (line - 1) * self.map.tileheight - oy,
-                           self.contextMenu.width, self.map.tileheight,
-                           self.contextMenu.width / 8, self.map.height / 8)
-
-   love.graphics.setColor(0, 0, 0, 255)
-   if (line == 1 and self.moved) or (line == 2 and self.attacked) then
-      love.graphics.setColor(75, 75, 75, 200)
-   end
-   local font = Character.menuItemFont
-   local oldFont = love.graphics.getFont()
-
-   love.graphics.printf(text, self.contextMenu.x - ox,
-                        self.contextMenu.y + (line - 1) * self.map.tileheight + self.map.tileheight / 2 - font:getHeight() / 2 - oy,
-                        self.contextMenu.width, 'center')
-
-   love.graphics.setFont(oldFont)
-   love.graphics.setColor(r, g, b, a)
 end
 
 return Character
