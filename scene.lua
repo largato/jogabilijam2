@@ -424,15 +424,15 @@ function Scene:keyPressed(key, scancode,  isRepeat)
          self:menuDown();
       end
    elseif key=="left" and not isRepeat then
-      if self:charSelected() then
+      if self:charActing() then
          self:targetTileLeft()
-      else
+      elseif not self:charSelected() then
          self:previousChar()
       end
    elseif key=="right" and not isRepeat then
-      if self:charSelected() then
+      if self:charActing() then
          self:targetTileRight()
-      else
+      elseif not self:charSelected() then
          self:nextChar()
       end
    elseif key=="return" and not isRepeat and self.charIndex ~= 0 then
