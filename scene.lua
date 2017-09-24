@@ -3,11 +3,8 @@ require "scenemanager"
 require "assets"
 
 local Object = require 'libs/classic/classic'
+local Character = require 'character'
 local Behavior = require "libs/knife/knife/behavior"
-
-local Saci = require "saci"
-local Loira = require "loira"
-local Cidadao = require "cidadaodebem"
 
 Scene = Object:extend()
 
@@ -37,7 +34,6 @@ function Scene:new(camera, map)
 end
 
 function Scene:loadCharFromScript(charName, map, x, y)
-   print(charName, map, x, y)
    local character = Character(map, x, y)
    local script = io.open("assets/scripts/chars/"..charName:lower()..".char", "r"):read("*all")
    local lines = script:split('\n')
