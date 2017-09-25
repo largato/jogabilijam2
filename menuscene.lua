@@ -60,7 +60,7 @@ end
 
 function MenuScene:itemSelected(item)
    if item == 1 then
-      sceneManager:setCurrent("battle")
+      sceneManager:setCurrent("intro")
    elseif item == 2 then
    elseif item == 3 then
    elseif item == 4 then
