@@ -25,34 +25,41 @@ function Character.loadCharFromScript(charName, map, x, y)
       elseif key=='attack' then character.attack = tonumber(value)
       elseif key=='damage' then character.damage = tonumber(value)
       elseif key=='portrait' then character.portrait = love.graphics.newImage(value)
-      elseif key:starts('animation') then
+      elseif key:starts('animation') and map ~= nil then
          local subparts = key:split('.')
          local func = assert(loadstring("return " .. value))
          character.sprite:addAnimation(subparts[2], func())
       end
    end
 
-   character:createMaps()
+   if map then
+      character:createMaps()
+   end
 
    return character
-
 end
 
 
-function Character:new(map, x, y, movement, attack, damage)
-   self.map = map
-   self.tileX = math.floor(x / map.tilewidth)
-   self.tileY = math.floor(y / map.tileheight)
-   self.x = self.tileX * map.tilewidth
-   self.y = self.tileY * map.tilewidth
+function Character:new(map, x, y)
    self.highlighted = false
    self.selected = false
-   self.sprite = sodapop.newAnimatedSprite(self.x + map.tilewidth / 2, self.y + map.tileheight / 2)
    self.moving = false -- show move map
    self.attacking = false -- show attack map
    self.moved = false
    self.attacked = false
-   self.actionMenu = ActionMenu(self, 4, 4, map.tilewidth, map.tileheight)
+   if map ~= nil then
+      self:setMap(map, x, y)
+   end
+end
+
+function Character:setMap(map, x, y)
+   self.map = map
+   self.tileX = math.floor(x / self.map.tilewidth)
+   self.tileY = math.floor(y / self.map.tileheight)
+   self.x = self.tileX * self.map.tilewidth
+   self.y = self.tileY * self.map.tilewidth
+   self.sprite = sodapop.newAnimatedSprite(self.x + map.tilewidth / 2, self.y + map.tileheight / 2)
+   self.actionMenu = ActionMenu(self, 4, 4, self.map.tilewidth, self.map.tileheight)
 end
 
 function Character:createMaps()

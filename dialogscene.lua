@@ -4,9 +4,9 @@ local Object = require 'libs/classic/classic'
 
 DialogScene = Object:extend()
 
-function DialogScene:new(dialogName, map)
+function DialogScene:new(dialogName, nextSceneName)
    self.characters = {}
-   self.map = map
+   self.nextScene = nextSceneName
    self.currentInstruction = 1
    self:parseScript(dialogName)
 
@@ -24,7 +24,7 @@ function DialogScene:parseScript(dialogName)
          local chars = values[2]:split(',')
          for i, c in ipairs(chars) do
             local charName = c:gsub("%s+", "")
-            self.characters[charName] = Character.loadCharFromScript(charName, self.map, 0, 0)
+            self.characters[charName] = Character.loadCharFromScript(charName)
          end
       elseif values[1] == 'background' then
          local imgFile = values[2]:gsub("%s+", "")
