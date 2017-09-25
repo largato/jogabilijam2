@@ -12,10 +12,20 @@ function MenuScene:new()
       "Sair",
    }
    self.line = 1
-   self.titleFont = assets.fonts.dpcomic(self.fontHeight)
    self.menuBackground = {0, 255, 255, 64}
    self.menuBorder = {0, 255, 255, 100}
    self.selected = {179, 211, 173, 200}
+end
+
+function MenuScene:init()
+   self.fontHeight = assets.config.fonts.menuItemHeight * settings:screenScaleFactor()
+   self.menuFont = assets.fonts.pressstartregular(self.fontHeight * settings:screenScaleFactor())
+   self.fontHeight = assets.config.fonts.menuItemHeight * settings:screenScaleFactor()
+   self.menuWidth = love.graphics.getWidth() * 0.4
+   self.menuItemHeight = self.fontHeight * 2
+   self.menuHeight = self.menuItemHeight * #self.items
+   self.x = love.graphics.getWidth() / 2 - self.menuWidth / 2
+   self.y = love.graphics.getHeight() / 2 - self.menuHeight / 2
 end
 
 function MenuScene:update(dt)
@@ -25,13 +35,6 @@ function MenuScene:draw()
    local oldFont = love.graphics.getFont()
    local r, g, b, a = love.graphics.getColor()
 
-   local fontHeight = assets.config.fonts.titleHeight * settings:screenScaleFactor()
-   local menuWidth = love.graphics.getWidth() * 0.4
-   local menuItemHeight = fontHeight * 2
-   local menuHeight = menuItemHeight * #self.items
-   local x = love.graphics.getWidth() / 2 - menuWidth / 2
-   local y = love.graphics.getHeight() / 2 - menuHeight / 2
-
    for i, option in pairs(self.items) do
       if i == self.line then
          love.graphics.setColor(unpack(self.selected))
@@ -39,20 +42,21 @@ function MenuScene:draw()
          love.graphics.setColor(unpack(self.menuBackground))
       end
 
-      love.graphics.rectangle('fill', x, y + (i - 1) * menuItemHeight,
-                           menuWidth, menuItemHeight,
-                           menuWidth / 10, menuWidth / 10)
+      love.graphics.rectangle('fill', self.x, self.y + (i - 1) * self.menuItemHeight,
+                           self.menuWidth, self.menuItemHeight,
+                           self.menuWidth / 10, self.menuWidth / 10)
 
       love.graphics.setColor(0, 0, 0, 255)
-      love.graphics.printf(option, x,
-                        y + (i - 1) * menuItemHeight + menuItemHeight / 2 - self.titleFont:getHeight() / 2,
-                        menuWidth, 'center')
+      love.graphics.setFont(self.menuFont)
+      love.graphics.printf(option, self.x,
+                        self.y + (i - 1) * self.menuItemHeight + self.menuItemHeight / 2 - self.fontHeight / 2,
+                        self.menuWidth, 'center')
 
       love.graphics.setColor(unpack(self.menuBorder))
 
-      love.graphics.rectangle('line', x, y + (i - 1) * menuItemHeight,
-                           menuWidth, menuItemHeight,
-                           menuWidth / 10, menuWidth / 10)
+      love.graphics.rectangle('line', self.x, self.y + (i - 1) * self.menuItemHeight,
+                           self.menuWidth, self.menuItemHeight,
+                           self.menuWidth / 10, self.menuWidth / 10)
    end
 
    love.graphics.setFont(oldFont)

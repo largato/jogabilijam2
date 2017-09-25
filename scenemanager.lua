@@ -17,7 +17,9 @@ function SceneManager:remove(sceneName)
 end
 
 function SceneManager:setCurrent(sceneName)
-   SceneManager.current = self.scenes[sceneName]
+   local scene = self.scenes[sceneName]
+   scene:init()
+   SceneManager.current = scene
 end
 
 function SceneManager:update(dt)

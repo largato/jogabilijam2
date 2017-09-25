@@ -29,7 +29,10 @@ function Scene:new(camera, map)
    self.titleFont = assets.fonts.dpcomic(assets.config.fonts.titleHeight * scaleFactor)
    self.charNameFont = assets.fonts.dpcomic(assets.config.fonts.charNameHeight * scaleFactor)
    self.menuItemFont = assets.fonts.dpcomic(assets.config.fonts.menuItemHeight * scaleFactor)
+end
 
+function Scene:init()
+   self.map:resize(love.graphics.getWidth(), love.graphics.getHeight())
    self:nextChar()
 end
 
@@ -44,7 +47,6 @@ end
 function Scene:draw()
    local c = self.camera
    c:set()
-   --self.map:resize(c.width, c.height)
    self.map:draw(-c.x, -c.y, c.scaleX, c.scaleY)
    manager:draw(0,0)
    self:drawHUD(c.x, c.y)

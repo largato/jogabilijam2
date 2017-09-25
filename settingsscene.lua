@@ -9,10 +9,12 @@ function SettingsScene:new()
    self.items = settings:currentSettings()
    table.insert(self.items, {"Voltar"})
    self.line = 1
-   self.titleFont = assets.fonts.dpcomic(self.fontHeight)
    self.menuBackground = {0, 255, 255, 64}
    self.menuBorder = {0, 255, 255, 100}
    self.selected = {179, 211, 173, 200}
+end
+
+function SettingsScene:init()
 end
 
 function SettingsScene:update(dt)
@@ -22,7 +24,8 @@ function SettingsScene:draw()
    local oldFont = love.graphics.getFont()
    local r, g, b, a = love.graphics.getColor()
 
-   local fontHeight = assets.config.fonts.titleHeight * settings:screenScaleFactor()
+   local fontHeight = assets.config.fonts.menuItemHeight * settings:screenScaleFactor()
+   local menuFont = assets.fonts.pressstartregular(fontHeight)
    local menuWidth = love.graphics.getWidth() * 0.4
    local menuItemHeight = fontHeight * 2
    local menuHeight = menuItemHeight * #self.items
@@ -41,8 +44,9 @@ function SettingsScene:draw()
                            menuWidth / 10, menuWidth / 10)
 
       love.graphics.setColor(0, 0, 0, 255)
+      love.graphics.setFont(menuFont)
       love.graphics.printf(settings:toString(setting), x,
-                        y + (i - 1) * menuItemHeight + menuItemHeight / 2 - self.titleFont:getHeight() / 2,
+                        y + (i - 1) * menuItemHeight + menuItemHeight / 2 - fontHeight / 2,
                         menuWidth, 'center')
 
       love.graphics.setColor(unpack(self.menuBorder))
