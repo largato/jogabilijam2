@@ -15,6 +15,9 @@ function DialogScene:new(dialogName, nextSceneName)
    self.textFont = assets.fonts.pressstartregular(assets.config.fonts.dialogTextHeight * scaleFactor)
 end
 
+function DialogScene:init()
+end
+
 function DialogScene:parseScript(dialogName)
    local script = io.open("assets/scripts/dialogs/"..dialogName:lower()..".dialog", "r"):read("*all")
    local lines = script:split('\n')

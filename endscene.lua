@@ -6,6 +6,9 @@ function EndScene:new(team)
    self.team = team
 end
 
+function EndScene:init()
+end
+
 function EndScene:update(dt)
 end
 
