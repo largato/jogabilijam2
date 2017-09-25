@@ -44,3 +44,5 @@ releases
 *.zip
 *.love
 *.deb
+
+settings.conf

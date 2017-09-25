@@ -1,0 +1,4 @@
+return {
+   {"FullScreen", false},
+   {"Resolução", "1280x720"}
+}
