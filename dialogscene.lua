@@ -137,7 +137,7 @@ function DialogScene:draw()
 end
 
 function DialogScene:keyPressed(key, scancode, isRepeat)
-   if (key == 'l' and not isRepeat) then
+   if (not isRepeat) then
       self.canProceed = true
    end
 end
