@@ -45,7 +45,7 @@ function DialogScene:nextInstruction()
       self:parseInstruction(inst)
       self.currentInstruction = self.currentInstruction + 1
    else
-      print("END SCENE!")
+      sceneManager:setCurrent(self.nextScene)
    end
 end
 
