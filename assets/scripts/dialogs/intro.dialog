@@ -1,0 +1,16 @@
+chars: saci,loira,cidadao
+background: assets/images/bg_intro.jpg
+start
+enter saci left
+say saci Onde estamos?
+say saci Quem está aí?
+enter cidadao right
+say cidadao Quem é você?
+say saci Sou o Saci Pererê. E você?
+say cidadao Sou um cidadão de bem, pago meus impostos em dia, não sou obrigado a te responder nada.
+exit cidadao
+say saci Foi embora, o trouxa.
+enter loira right
+say loira Quem era?
+say saci Sei lá, um cuzão do caraio. Deve ter uma Hilux...
+end

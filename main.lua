@@ -7,6 +7,7 @@ local Camera = require "camera"
 local Scene = require "scene"
 local EndScene = require "endscene"
 local MenuScene = require "menuscene"
+local DialogScene = require 'dialogscene'
 
 local debugMode = true
 local width = 1280
@@ -17,6 +18,7 @@ function love.load()
 
    local map = Map("assets/maps/green_valley.lua")
    sceneManager:add("menu", MenuScene())
+   sceneManager:add("intro", DialogScene('intro', map))
    sceneManager:add("battle", Scene(Camera(width, height), map))
    sceneManager:add("PlayerWon", EndScene("Jogador"))
    sceneManager:add("EnemyWon", EndScene("Inimigo"))
@@ -35,6 +37,10 @@ function love.draw()
    if debugMode then
       drawDebugInfo()
    end
+end
+
+function love.keypressed(key, scancode, isRepeat)
+   sceneManager:keyPressed(key, scancode, isRepeat)
 end
 
 function drawDebugInfo()

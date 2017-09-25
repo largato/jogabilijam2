@@ -16,7 +16,7 @@ function Scene:new(camera, map)
       local parts = object.name:split("-")
       local charType = parts[1]
       local charName = parts[2]
-      manager:add(Scene:loadCharFromScript(charName, map, object.x, object.y), charType)
+      manager:add(Character.loadCharFromScript(charName, map, object.x, object.y), charType)
    end
 
    self.playerChars = manager:getByType("Player")
@@ -31,34 +31,6 @@ function Scene:new(camera, map)
    self.menuItemFont = assets.fonts.dpcomic(assets.config.fonts.menuItemHeight * scaleFactor)
 
    self:nextChar()
-end
-
-function Scene:loadCharFromScript(charName, map, x, y)
-   local character = Character(map, x, y)
-   local script = io.open("assets/scripts/chars/"..charName:lower()..".char", "r"):read("*all")
-   local lines = script:split('\n')
-   for lineNum, line in ipairs(lines) do
-      local parts = line:split(':')
-      local key = parts[1]:lower()
-      local value = parts[2]:gsub("%s+", "")
-      if key=='name' then character.name = value
-      elseif key=='hp' then character.HP = tonumber(value); character.originalHP = tonumber(value)
-      elseif key=='mp' then character.MP = tonumber(value); character.originalMP = tonumber(value)
-      elseif key=='speed' then character.speed = tonumber(value)
-      elseif key=='movement' then character.movement = tonumber(value)
-      elseif key=='attack' then character.attack = tonumber(value)
-      elseif key=='portrait' then character.portrait = love.graphics.newImage(value)
-      elseif key=='damage' then character.damage = tonumber(value)
-      elseif key:starts('animation') then
-         local subparts = key:split('.')
-         local func = assert(loadstring("return " .. value))
-         character.sprite:addAnimation(subparts[2], func())
-      end
-   end
-
-   character:createMaps()
-
-   return character
 end
 
 function Scene:setCamera(c)
@@ -483,10 +455,6 @@ function Scene:keyPressed(key, scancode,  isRepeat)
          self:attack()
       end
    end
-end
-
-function love.keypressed(key, scancode, isRepeat)
-   sceneManager.current:keyPressed(key, scancode, isRepeat)
 end
 
 return Scene

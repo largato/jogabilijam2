@@ -34,4 +34,8 @@ function SceneManager:draw()
    SceneManager.current:draw()
 end
 
+function SceneManager:keyPressed(key, scancode, isRepeat)
+   SceneManager.current:keyPressed(key, scancode, isRepeat)
+end
+
 sceneManager = SceneManager()
