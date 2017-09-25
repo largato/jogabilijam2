@@ -7,7 +7,7 @@ local ActionMap = require "actionmap"
 
 Character = Object:extend()
 Character.menuItemFont = assets.fonts.dpcomic(assets.config.fonts.menuItemHeight *
-                                                 assets.config.screen.scaleFactor)
+                                                 settings:screenScaleFactor())
 
 function Character.loadCharFromScript(charName, map, x, y)
    local character = Character(map, x, y)

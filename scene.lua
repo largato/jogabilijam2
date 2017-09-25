@@ -25,7 +25,7 @@ function Scene:new(camera, map)
    self.turn = 1
    self.team = "Player"
 
-   local scaleFactor = assets.config.screen.scaleFactor
+   local scaleFactor = settings:screenScaleFactor()
    self.titleFont = assets.fonts.dpcomic(assets.config.fonts.titleHeight * scaleFactor)
    self.charNameFont = assets.fonts.dpcomic(assets.config.fonts.charNameHeight * scaleFactor)
    self.menuItemFont = assets.fonts.dpcomic(assets.config.fonts.menuItemHeight * scaleFactor)
@@ -150,8 +150,9 @@ function Scene:nextChar()
       index = index % table.getn(self:currentTeam()) + 1
    until not self:char(index):turnDone()
    self:highlightChar(index)
-   self.camera:panTo(1, self:char().x - self.camera.width / 2,
-                     self:char().y - self.camera.height / 2)
+   local w, h, flags = love.window.getMode()
+   self.camera:panTo(1, self:char().x - w / 2,
+                     self:char().y - h / 2)
    self:char():resetUI()
 end
 
@@ -165,8 +166,9 @@ function Scene:previousChar()
       index = (index - 2) % table.getn(self:currentTeam()) + 1
    until not self:char(index):turnDone()
    self:highlightChar(index)
-   self.camera:panTo(1, self:char().x - self.camera.width / 2,
-                     self:char().y - self.camera.height / 2)
+   local w, h, flags = love.window.getMode()
+   self.camera:panTo(1, self:char().x - w / 2,
+                     self:char().y - h / 2)
 end
 
 function Scene:targetTileUp()
