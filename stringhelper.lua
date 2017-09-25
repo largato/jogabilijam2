@@ -8,3 +8,7 @@ function string:split(sep)
    self:gsub(pattern, function(c) fields[#fields+1] = c end)
    return fields
 end
+
+function string:trim()
+   return (self:gsub("^%s*(.-)%s*$", "%1"))
+end

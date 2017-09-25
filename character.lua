@@ -7,7 +7,34 @@ local ActionMap = require "actionmap"
 
 Character = Object:extend()
 Character.menuItemFont = assets.fonts.dpcomic(assets.config.fonts.menuItemHeight *
-                                              assets.config.screen.scaleFactor)
+                                                 assets.config.screen.scaleFactor)
+
+function Character.loadCharFromScript(charName, map, x, y)
+   local character = Character(map, x, y)
+   local script = io.open("assets/scripts/chars/"..charName:lower()..".char", "r"):read("*all")
+   local lines = script:split('\n')
+   for lineNum, line in ipairs(lines) do
+      local parts = line:split(':')
+      local key = parts[1]:lower()
+      local value = parts[2]:trim()
+      if key=='name' then character.name = value
+      elseif key=='hp' then character.HP = tonumber(value); character.originalHP = tonumber(value)
+      elseif key=='mp' then character.MP = tonumber(value); character.originalMP = tonumber(value)
+      elseif key=='speed' then character.speed = tonumber(value)
+      elseif key=='movement' then character.movement = tonumber(value)
+      elseif key=='attack' then character.attack = tonumber(value)
+      elseif key=='damage' then character.damage = tonumber(value)
+      elseif key=='portrait' then character.portrait = love.graphics.newImage(value)
+      elseif key:starts('animation') then
+         local subparts = key:split('.')
+         local func = assert(loadstring("return " .. value))
+         character.sprite:addAnimation(subparts[2], func())
+      end
+   end
+   return character
+
+end
+
 
 function Character:new(map, x, y, movement, attack, damage)
    self.map = map
