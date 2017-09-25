@@ -11,8 +11,8 @@ function DialogScene:new(dialogName, nextSceneName)
    self:parseScript(dialogName)
 
    local scaleFactor = assets.config.screen.scaleFactor
-   self.titleFont = assets.fonts.joystixmonospace(assets.config.fonts.titleHeight * scaleFactor)
-   self.textFont = assets.fonts.joystixmonospace(assets.config.fonts.dialogTextHeight * scaleFactor)
+   self.titleFont = assets.fonts.pressstartregular(assets.config.fonts.titleHeight * scaleFactor)
+   self.textFont = assets.fonts.pressstartregular(assets.config.fonts.dialogTextHeight * scaleFactor)
 end
 
 function DialogScene:parseScript(dialogName)
