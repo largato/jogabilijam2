@@ -31,6 +31,9 @@ function Character.loadCharFromScript(charName, map, x, y)
          character.sprite:addAnimation(subparts[2], func())
       end
    end
+
+   character:createMaps()
+
    return character
 
 end
