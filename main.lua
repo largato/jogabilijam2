@@ -12,14 +12,12 @@ local DialogScene = require 'dialogscene'
 local SettingsScene = require "settingsscene"
 
 local debugMode = true
-local width = 1280
-local height = 720
 
 function love.load()
    local map = Map("assets/maps/green_valley.lua")
    sceneManager:add("menu", MenuScene())
    sceneManager:add("intro", DialogScene('intro', "battle"))
-   sceneManager:add("battle", Scene(Camera(width, height), map))
+   sceneManager:add("battle", Scene(Camera(), map))
    sceneManager:add("PlayerWon", EndScene("Jogador"))
    sceneManager:add("EnemyWon", EndScene("Inimigo"))
    sceneManager:add("settings", SettingsScene())

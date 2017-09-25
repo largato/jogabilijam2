@@ -10,7 +10,7 @@ function DialogScene:new(dialogName, nextSceneName)
    self.currentInstruction = 1
    self:parseScript(dialogName)
 
-   local scaleFactor = assets.config.screen.scaleFactor
+   local scaleFactor = settings:screenScaleFactor()
    self.titleFont = assets.fonts.pressstartregular(assets.config.fonts.titleHeight * scaleFactor)
    self.textFont = assets.fonts.pressstartregular(assets.config.fonts.dialogTextHeight * scaleFactor)
 end
@@ -122,7 +122,7 @@ function DialogScene:draw()
       x = love.graphics.getWidth() * 0.15
       y = love.graphics.getHeight() * 0.75
       w = love.graphics.getWidth() - (2 * x)
-      
+
       love.graphics.setColor(255, 255, 255, 255)
       love.graphics.setFont(self.titleFont)
       love.graphics.printf(self.currentDialogChar.name, x, y, w, 'left')

@@ -79,6 +79,7 @@ function Settings:applySetting(setting)
       local w, h, flags = love.window.getMode()
       flags.fullscreen = setting[3]
       love.window.setMode(w, h, flags)
+      -- XXX screen doesn't resize automatically when disabling fullscreen mode
    elseif setting[1] == "Resolução" then
       local parts = setting[3]:split("x")
       local w, h, flags = love.window.getMode()
@@ -88,6 +89,10 @@ function Settings:applySetting(setting)
    love.event.clear() -- XXX when we change modes, looks like lua ignores previous key presses
                       -- and the "ispressed" parameter in love.keypressed is always false.
                       -- here we clear the event queue to fix this.
+end
+
+function Settings:screenScaleFactor()
+   return love.graphics.getWidth() / 1280
 end
 
 function Settings:nextString(setting)
