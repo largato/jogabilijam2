@@ -1,16 +1,13 @@
 require "assets"
+require "settings"
 
 local Object = require 'libs/classic/classic'
 
-MenuScene = Object:extend()
+SettingsScene = Object:extend()
 
-function MenuScene:new()
-   self.items = {
-      "Jogar",
-      "Configurações",
-      "Sobre",
-      "Sair",
-   }
+function SettingsScene:new()
+   self.items = settings:currentSettings()
+   table.insert(self.items, {"Voltar"})
    self.line = 1
    self.fontHeight = assets.config.fonts.titleHeight * assets.config.screen.scaleFactor
    self.titleFont = assets.fonts.dpcomic(self.fontHeight)
@@ -24,14 +21,14 @@ function MenuScene:new()
    self.y = love.graphics.getHeight() / 2 - self.menuHeight / 2
 end
 
-function MenuScene:update(dt)
+function SettingsScene:update(dt)
 end
 
-function MenuScene:draw()
+function SettingsScene:draw()
    local oldFont = love.graphics.getFont()
    local r, g, b, a = love.graphics.getColor()
 
-   for i, option in pairs(self.items) do
+   for i, setting in pairs(self.items) do
       if i == self.line then
          love.graphics.setColor(unpack(self.selected))
       else
@@ -43,7 +40,7 @@ function MenuScene:draw()
                            self.menuWidth / 10, self.menuWidth / 10)
 
       love.graphics.setColor(0, 0, 0, 255)
-      love.graphics.printf(option, self.x,
+      love.graphics.printf(settings:toString(setting), self.x,
                         self.y + (i - 1) * self.menuItemHeight + self.menuItemHeight / 2 - self.titleFont:getHeight() / 2,
                         self.menuWidth, 'center')
 
@@ -58,25 +55,22 @@ function MenuScene:draw()
    love.graphics.setColor(r, g, b, a)
 end
 
-function MenuScene:itemSelected(item)
-   if item == 1 then
-      sceneManager:setCurrent("intro")
-   elseif item == 2 then
-      sceneManager:setCurrent("settings")
-   elseif item == 3 then
-   elseif item == 4 then
-      love.event.quit(0)
-   end
-end
-
-function MenuScene:keyPressed(key, scancode,  isRepeat)
+function SettingsScene:keyPressed(key, scancode, isRepeat)
    if key=="up" and not isRepeat then
       self.line = (self.line - 2) % #self.items + 1
    elseif key=="down" and not isRepeat then
       self.line = self.line % #self.items + 1
+   elseif key=="escape" and not isRepeat then
+      sceneManager:setCurrent("menu")
    elseif key=="return" and not isRepeat then
-      self:itemSelected(self.line)
+      if self.items[self.line][1] == "Voltar" then -- XXX this is ugly, I know
+         sceneManager:setCurrent("menu")
+      end
+   elseif key=="left" and not isRepeat then
+      settings:previousSetting(self.line)
+   elseif key=="right" and not isRepeat then
+      settings:nextSetting(self.line)
    end
 end
 
-return MenuScene
+return SettingsScene
