@@ -121,6 +121,7 @@ function Character:drawHighlight(ox, oy)
    love.graphics.setColor(r, g, b, a)
 end
 
+-- TODO: move this function somewhere else
 function Character:charHit(x, y)
    for entity, v in pairs(manager:getEntities()) do
       if x == entity.tileX and y == entity.tileY then

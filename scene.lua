@@ -1,6 +1,7 @@
 require "entitymanager"
 require "scenemanager"
 require "assets"
+require "utils"
 
 local Object = require 'libs/classic/classic'
 local Character = require 'character'
@@ -173,6 +174,13 @@ function Scene:previousChar()
                      self:char().y - h / 2)
 end
 
+function Scene:setTargetTile(x, y)
+   if not self:charSelected() then
+      return
+   end
+   self:char():actionMap():setTarget(x, y)
+end
+
 function Scene:targetTileUp()
    if not self:charSelected() then
       return
@@ -218,6 +226,7 @@ function Scene:move()
       return
    end
    self:char():moveToTarget()
+
    if self:char():turnDone() then
       self:skip()
    end
@@ -230,7 +239,7 @@ function Scene:select()
    self:char().selected = true
 end
 
-function Scene:attack()
+function Scene:attack(skip)
    if not self:charSelected() then
       return
    end
@@ -239,9 +248,11 @@ function Scene:attack()
    if self:playerWon() then
       sceneManager:setCurrent("PlayerWon")
       return
+   elseif self:enemyWon() then
+      sceneManager:setCurrent("EnemyWon")
    end
 
-   if self:char():turnDone() then
+   if skip or self:char():turnDone() then
       self:skip()
    end
 end
@@ -336,7 +347,7 @@ function Scene:startEnemyTurn()
          { duration = 0.2, action = Scene.enemyAttack, after = 'actionEnd' }
       },
       actionEnd = {
-         { action = Scene.enemyCheckEnd }
+         { duration = 0.1, action = Scene.enemyCheckEnd }
       }
    }
 
@@ -349,32 +360,84 @@ function Scene:enemySetMoving(scene)
 end
 
 function Scene:enemySetDestination(scene)
-   -- TODO: find best move
-   scene:targetTileDown()
+   -- choose nearest player character as target
+   local targetChar = scene:nearestPlayerChar(scene:char())
+   if targetChar == nil then
+      return
+   end
+
+   local attackMap = scene:char().attackMap.map
+   for i, tile in ipairs(attackMap) do
+      if tile.x == targetChar.tileX and tile.y == targetChar.tileY then
+         return -- don't move if target char is within attack range
+      end
+   end
+
+   -- now, choose the tile nearest to the target char
+   local moveMap = scene:char().moveMap.map
+   local minTile = 999999
+   local targetTile
+   for i, tile in ipairs(moveMap) do
+      if (tile.x ~= scene:char().tileX or tile.y ~= scene:char().tileY) and
+         (tile.x ~= targetChar.tileX or tile.y ~= targetChar.tileY) and
+         not targetChar:charHit(tile.x, tile.y) then -- TODO: remove this function from character class
+         local tileDist = manhattan({tile.x, tile.y}, {targetChar.tileX, targetChar.tileY})
+
+         if tileDist < minTile then
+            minTile = tileDist
+            targetTile = tile
+         end
+      end
+   end
+
+   scene:setTargetTile(targetTile.x, targetTile.y)
+end
+
+function Scene:nearestPlayerChar(origin)
+   local nearest
+   local minChar = 999999
+   for i, char in ipairs(self.playerChars) do
+      if not char:dead() then
+         local charDist = manhattan({origin.tileX, origin.tileY},
+                                    {char.tileX, char.tileY})
+         if charDist < minChar then
+            minChar = charDist
+            nearest = char
+         end
+      end
+   end
+   return nearest
 end
 
 function Scene:enemySetAttacking(scene)
-   -- TODO: check if it can attack
-   scene:skip()
-   -- scene:char().attacking = true
+   scene:char().attacking = true
 end
 
 function Scene:enemySetAttackTarget(scene)
-   -- TODO: find best move
-   scene:targetTileDown()
+   -- choose nearest player character as target
+   local targetChar = scene:nearestPlayerChar(scene:char())
+
+   -- now, choose the tile nearest to the target char
+   local attackMap = scene:char().attackMap.map
+   for i, tile in ipairs(attackMap) do
+      if tile.x == targetChar.tileX and tile.y == targetChar.tileY then
+         scene:setTargetTile(tile.x, tile.y)
+         break
+      end
+   end
 end
 
 function Scene:enemyMove(scene)
    scene:move()
+   if not scene:char().moved then
+      -- force character status if the enemy didn't move
+      scene:char().moving = false
+      scene:char().moved = true
+   end
 end
 
 function Scene:enemyAttack(scene)
-   scene:attack()
-
-   if scene:enemyWon() then
-      sceneManager:setCurrent("EnemyWon")
-      return
-   end
+   scene:attack(true)
 end
 
 function Scene:enemyCheckEnd(scene)
