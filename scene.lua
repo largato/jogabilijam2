@@ -24,14 +24,14 @@ function Scene:new(camera, map)
    self.charIndex = 0
    self.turn = 1
    self.team = "Player"
+end
 
+function Scene:init()
    local scaleFactor = settings:screenScaleFactor()
    self.titleFont = assets.fonts.dpcomic(assets.config.fonts.titleHeight * scaleFactor)
    self.charNameFont = assets.fonts.dpcomic(assets.config.fonts.charNameHeight * scaleFactor)
    self.menuItemFont = assets.fonts.dpcomic(assets.config.fonts.menuItemHeight * scaleFactor)
-end
 
-function Scene:init()
    self.map:resize(love.graphics.getWidth(), love.graphics.getHeight())
    self:nextChar()
 end
