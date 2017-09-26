@@ -25,6 +25,7 @@ function Character.loadCharFromScript(charName, map, x, y)
       elseif key=='attack' then character.attack = tonumber(value)
       elseif key=='damage' then character.damage = tonumber(value)
       elseif key=='portrait' then character.portrait = love.graphics.newImage(value)
+      elseif key=='avatar' then character.avatar = love.graphics.newImage(value)
       elseif key:starts('animation') and map ~= nil then
          local subparts = key:split('.')
          local func = assert(loadstring("return " .. value))

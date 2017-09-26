@@ -87,11 +87,11 @@ function Scene:drawHUD(ox, oy)
       love.graphics.setColor(0, 0, 255, 128)
       love.graphics.rectangle('fill', charSheetX, charSheetY, charSheetWidth, charSheetHeight)
       love.graphics.setColor(255, 255, 255, 255)
-      -- character portrait --
+      -- character avatar --
       love.graphics.setColor(r, g, b, a)
-      local portraitXScale = charPicWidth/self:char().portrait:getWidth()
-      local portraitYScale = charPicHeight/self:char().portrait:getHeight()
-      love.graphics.draw(self:char().portrait, charPicX, charPicY, 0, portraitXScale, portraitYScale)
+      local avatarXScale = charPicWidth/self:char().avatar:getWidth()
+      local avatarYScale = charPicHeight/self:char().avatar:getHeight()
+      love.graphics.draw(self:char().avatar, charPicX, charPicY, 0, avatarXScale, avatarYScale)
       -- character name and status --
       love.graphics.setFont(self.charNameFont)
       love.graphics.printf(charName, charNameX, charNameY, charSheetWidth, 'center')

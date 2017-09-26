@@ -6,4 +6,5 @@ movement: 2
 attack: 1
 damage: 25
 portrait: assets/images/saci_portrait.png
+avatar: assets/images/saci_avatar.png
 animation.idle: { image = love.graphics.newImage 'assets/images/saci.png', frameWidth=26, frameHeight=34, stopAtEnd=false, frames={ {1, 1, 4, 1, .4} } }
