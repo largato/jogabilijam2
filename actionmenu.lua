@@ -66,11 +66,16 @@ function ActionMenu:drawLine(line, text, ox, oy)
    if (line == 1 and self.character.moved) or (line == 2 and self.character.attacked) then
       love.graphics.setColor(75, 75, 75, 200)
    end
-   local font = Character.menuItemFont
+   if self.menuItemFont == nil then
+      self.menuItemFont = assets.fonts.dpcomic(assets.config.fonts.actionMenuItemHeight *
+                                               settings:screenScaleFactor())
+
+   end
    local oldFont = love.graphics.getFont()
 
+   love.graphics.setFont(self.menuItemFont)
    love.graphics.printf(text, self.x - ox,
-                        self.y + (line - 1) * self.tileHeight + self.tileHeight / 2 - font:getHeight() / 2 - oy,
+                        self.y + (line - 1) * self.tileHeight + self.tileHeight / 2 - self.menuItemFont:getHeight() / 2 - oy,
                         self.width, 'center')
 
    love.graphics.setFont(oldFont)
