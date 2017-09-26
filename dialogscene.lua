@@ -9,13 +9,12 @@ function DialogScene:new(dialogName, nextSceneName)
    self.nextScene = nextSceneName
    self.currentInstruction = 1
    self:parseScript(dialogName)
-
-   local scaleFactor = settings:screenScaleFactor()
-   self.titleFont = assets.fonts.pressstartregular(assets.config.fonts.titleHeight * scaleFactor)
-   self.textFont = assets.fonts.pressstartregular(assets.config.fonts.dialogTextHeight * scaleFactor)
 end
 
 function DialogScene:init()
+   local scaleFactor = settings:screenScaleFactor()
+   self.titleFont = assets.fonts.pressstartregular(assets.config.fonts.titleHeight * scaleFactor)
+   self.textFont = assets.fonts.pressstartregular(assets.config.fonts.dialogTextHeight * scaleFactor)
 end
 
 function DialogScene:parseScript(dialogName)
