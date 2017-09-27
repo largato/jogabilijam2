@@ -13,7 +13,7 @@ end
 
 function DialogScene:init()
    local scaleFactor = settings:screenScaleFactor()
-   self.titleFont = assets.fonts.pressstartregular(assets.config.fonts.titleHeight * scaleFactor)
+   self.titleFont = assets.fonts.pressstartregular(assets.config.fonts.charNameHeight * scaleFactor)
    self.textFont = assets.fonts.pressstartregular(assets.config.fonts.dialogTextHeight * scaleFactor)
 end
 
@@ -42,6 +42,7 @@ function DialogScene:parseScript(dialogName)
 end
 
 function DialogScene:nextInstruction()
+   self.currentDialogText = nil
    local inst = self.instructions[self.currentInstruction]
    if inst ~= nil then
       self:parseInstruction(inst)
