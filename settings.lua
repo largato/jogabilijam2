@@ -78,6 +78,16 @@ function Settings:applySetting(setting)
    if setting[1] == "FullScreen" then
       local w, h, flags = love.window.getMode()
       flags.fullscreen = setting[3]
+      if self.settings ~= nil then
+        for i, setting in ipairs(self.settings) do
+            if setting[1] == "Resolução" then
+                local parts = setting[3]:split("x")
+                w = parts[1]
+                h = parts[2]
+                break
+            end
+        end
+      end
       love.window.setMode(w, h, flags)
       -- XXX screen doesn't resize automatically when disabling fullscreen mode
    elseif setting[1] == "Resolução" then
