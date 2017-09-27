@@ -19,8 +19,7 @@ end
 
 function MenuScene:init()
    self.fontHeight = assets.config.fonts.menuItemHeight * settings:screenScaleFactor()
-   self.menuFont = assets.fonts.pressstartregular(self.fontHeight * settings:screenScaleFactor())
-   self.fontHeight = assets.config.fonts.menuItemHeight * settings:screenScaleFactor()
+   self.menuFont = assets.fonts.pressstartregular(self.fontHeight)
    self.menuWidth = love.graphics.getWidth() * 0.4
    self.menuItemHeight = self.fontHeight * 2
    self.menuHeight = self.menuItemHeight * #self.items
