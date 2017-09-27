@@ -3,5 +3,5 @@ return {
    charNameHeight = 26,
    menuItemHeight = 22,
    actionMenuItemHeight = 15,
-   dialogTextHeight = 26
+   dialogTextHeight = 20
 }
