@@ -68,6 +68,7 @@ function MenuScene:itemSelected(item)
    elseif item == 2 then
       sceneManager:setCurrent("settings")
    elseif item == 3 then
+      sceneManager:setCurrent("credits")
    elseif item == 4 then
       love.event.quit(0)
    end
