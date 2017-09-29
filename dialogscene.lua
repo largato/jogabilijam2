@@ -99,10 +99,10 @@ function DialogScene:draw()
    love.graphics.draw(self.background, 0, 0, 0, bgXScale, bgYScale)
    -- left character --
    if self.leftChar ~= nil then
-      local x = 0
-      local y = love.graphics.getHeight() * 0.3
       local scaleY = (love.graphics.getHeight() * 0.7) / self.leftChar.portrait:getHeight()
       local scaleX = scaleY
+      local x = 0
+      local y = love.graphics.getHeight() * 0.3
       love.graphics.draw(self.leftChar.portrait, x, y, 0, scaleX, scaleY)
    end
    -- right character --
@@ -110,7 +110,7 @@ function DialogScene:draw()
       local scaleY = (love.graphics.getHeight() * 0.7) / self.rightChar.portrait:getHeight()
       local scaleX = scaleY
       local x = love.graphics.getWidth() - (self.rightChar.portrait:getWidth()*scaleX)
-      local y = (love.graphics.getHeight() * 0.3) * scaleY
+      local y = love.graphics.getHeight() * 0.3
       love.graphics.draw(self.rightChar.portrait, x, y, 0, scaleX, scaleY)
    end
    -- dialog box and content --
