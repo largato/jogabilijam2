@@ -1,5 +1,5 @@
 chars: saci,loira,iara,cidadao,mary,mao
-background: assets/images/bg_intro.jpg
+background: assets/images/bg_intro.png
 start
 enter saci left
 say saci Lembra quando a criançada falava da gente? Sempre tinha desenho meu na escola, tinha livro sobre mim...
