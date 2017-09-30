@@ -1,13 +1,13 @@
 require 'assets'
 
 local Object = require 'libs/classic/classic'
+local flux = require 'libs/flux/flux'
 
 DialogScene = Object:extend()
 
 function DialogScene:new(dialogName, nextSceneName)
    self.characters = {}
    self.nextScene = nextSceneName
-   self.currentInstruction = 1
    self:parseScript(dialogName)
 end
 
@@ -15,6 +15,13 @@ function DialogScene:init()
    local scaleFactor = settings:screenScaleFactor()
    self.titleFont = assets.fonts.pressstartregular(assets.config.fonts.charNameHeight * scaleFactor)
    self.textFont = assets.fonts.pressstartregular(assets.config.fonts.dialogTextHeight * scaleFactor)
+
+   self.absentLeftX = -love.graphics.getWidth() / 2
+   self.absentRightX = love.graphics.getWidth() * 1.5
+   self.leftX = self.absentLeftX
+   self.rightX = self.absentRightX
+
+   self.currentInstruction = 1
 end
 
 function DialogScene:parseScript(dialogName)
@@ -61,8 +68,11 @@ function DialogScene:parseInstruction(inst)
       local side = parts[3]:gsub("%s+", "")
       if side == 'left' then
          self.leftChar = self.characters[char]
+         flux.to(self, 0.5, { leftX = 0 })
       else
          self.rightChar = self.characters[char]
+         local scaleX = (love.graphics.getHeight() * 0.7) / self.rightChar.portrait:getHeight()
+         flux.to(self, 0.5, { rightX = love.graphics.getWidth() - (self.rightChar.portrait:getWidth()*scaleX) })
       end
    elseif command == 'say' then
       self.currentDialogChar = self.characters[char]
@@ -73,16 +83,19 @@ function DialogScene:parseInstruction(inst)
       self.currentDialogText = text
    elseif command == 'exit' then
       if self.leftChar == self.characters[char] then
-         self.leftChar = nil
+         flux.to(self, 0.5, { leftX = self.absentLeftX })
+         --self.leftChar = nil
       elseif self.rightChar == self.characters[char] then
-         self.rightChar = nil
+         flux.to(self, 0.5, { rightX = self.absentRightX })
+         --self.rightChar = nil
       end
    else
-      print(inst)
+      print("ERROR: Unknown instruction "..inst)
    end
 end
 
 function DialogScene:update(dt)
+   flux.update(dt)
    if self.canProceed then
       self:nextInstruction()
       self.canProceed = false
@@ -101,15 +114,14 @@ function DialogScene:draw()
    if self.leftChar ~= nil then
       local scaleY = (love.graphics.getHeight() * 0.7) / self.leftChar.portrait:getHeight()
       local scaleX = scaleY
-      local x = 0
       local y = love.graphics.getHeight() * 0.3
-      love.graphics.draw(self.leftChar.portrait, x, y, 0, scaleX, scaleY)
+      love.graphics.draw(self.leftChar.portrait, self.leftX, y, 0, scaleX, scaleY)
    end
    -- right character --
    if self.rightChar ~= nil then
       local scaleY = (love.graphics.getHeight() * 0.7) / self.rightChar.portrait:getHeight()
       local scaleX = scaleY
-      local x = love.graphics.getWidth() - (self.rightChar.portrait:getWidth()*scaleX)
+      local x = self.rightX
       local y = love.graphics.getHeight() * 0.3
       love.graphics.draw(self.rightChar.portrait, x, y, 0, scaleX, scaleY)
    end
