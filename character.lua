@@ -4,6 +4,7 @@ local sodapop = require "libs/sodapop/sodapop"
 local Object = require "libs/classic/classic"
 local ActionMenu = require "actionmenu"
 local ActionMap = require "actionmap"
+local Attack = require "attack"
 
 Character = Object:extend()
 
@@ -71,6 +72,10 @@ function Character:update(dt)
       return
    end
    self.sprite:update(dt)
+
+   if self.attackAnimation ~= nil then
+      self.attackAnimation:update(dt)
+   end
 end
 
 function Character:draw(ox, oy)
@@ -78,20 +83,21 @@ function Character:draw(ox, oy)
       return
    end
 
-   if self:dead() then
-      -- TODO: add death animation
-      return
+   if not self:dead() then
+      if self.highlighted then
+         self:drawHighlight(ox, oy)
+      end
+      if self.moving then
+         self.moveMap:draw(ox, oy)
+      elseif self.attacking then
+         self.attackMap:draw(ox, oy)
+      end
+      self.sprite:draw(ox, oy)
    end
 
-   if self.highlighted then
-      self:drawHighlight(ox, oy)
+   if self.attackAnimation ~= nil then
+      self.attackAnimation:draw(ox, oy)
    end
-   if self.moving then
-      self.moveMap:draw(ox, oy)
-   elseif self.attacking then
-      self.attackMap:draw(ox, oy)
-   end
-   self.sprite:draw(ox, oy)
 end
 
 function Character:moveTo(tileX, tileY)
@@ -159,6 +165,11 @@ function Character:attackTarget()
    self.actionMenu:select(1)
 
    hit.HP = hit.HP - self.damage
+   hit:newAttackAnimation()
+end
+
+function Character:newAttackAnimation()
+   self.attackAnimation = Attack(self.x + 16, self.y + 16)
 end
 
 function Character:dead()
