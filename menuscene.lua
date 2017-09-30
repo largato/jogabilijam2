@@ -22,6 +22,7 @@ function MenuScene:init()
    self.menuHeight = self.menuItemHeight * #self.items
    self.x = love.graphics.getWidth() / 2 - self.menuWidth / 2
    self.y = love.graphics.getHeight() / 2 - self.menuHeight / 2
+   self.background = love.graphics.newImage('assets/images/bg_menu.png')
    self.buttonOnImage = love.graphics.newImage('assets/images/button_on.png')
    self.buttonOffImage = love.graphics.newImage('assets/images/button_off.png')
    self.buttonScaleX = self.menuWidth / self.buttonOnImage:getWidth()
@@ -35,7 +36,9 @@ function MenuScene:draw()
    local oldFont = love.graphics.getFont()
    local r, g, b, a = love.graphics.getColor()
 
-   love.graphics.clear()
+   local bgScaleX = love.graphics.getWidth() / self.background:getWidth()
+   local bgScaleY = love.graphics.getHeight() / self.background:getHeight()
+   love.graphics.draw(self.background, 0, 0, 0, bgScaleX, bgScaleY)
 
    for i, option in pairs(self.items) do
       love.graphics.setColor(r, g, b, a)
