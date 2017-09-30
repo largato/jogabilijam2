@@ -12,9 +12,6 @@ function MenuScene:new()
       "Sair",
    }
    self.line = 1
-   self.menuBackground = {0, 255, 255, 64}
-   self.menuBorder = {0, 255, 255, 100}
-   self.selected = {179, 211, 173, 200}
 end
 
 function MenuScene:init()
@@ -25,6 +22,10 @@ function MenuScene:init()
    self.menuHeight = self.menuItemHeight * #self.items
    self.x = love.graphics.getWidth() / 2 - self.menuWidth / 2
    self.y = love.graphics.getHeight() / 2 - self.menuHeight / 2
+   self.buttonOnImage = love.graphics.newImage('assets/images/button_on.png')
+   self.buttonOffImage = love.graphics.newImage('assets/images/button_off.png')
+   self.buttonScaleX = self.menuWidth / self.buttonOnImage:getWidth()
+   self.buttonScaleY = self.menuItemHeight / self.buttonOnImage:getHeight()
 end
 
 function MenuScene:update(dt)
@@ -34,16 +35,18 @@ function MenuScene:draw()
    local oldFont = love.graphics.getFont()
    local r, g, b, a = love.graphics.getColor()
 
+   love.graphics.clear()
+
    for i, option in pairs(self.items) do
+      love.graphics.setColor(r, g, b, a)
+      local button = nil
       if i == self.line then
-         love.graphics.setColor(unpack(self.selected))
+         button = self.buttonOnImage
       else
-         love.graphics.setColor(unpack(self.menuBackground))
+         button = self.buttonOffImage
       end
 
-      love.graphics.rectangle('fill', self.x, self.y + (i - 1) * self.menuItemHeight,
-                           self.menuWidth, self.menuItemHeight,
-                           self.menuWidth / 10, self.menuWidth / 10)
+      love.graphics.draw(button, self.x, self.y + (i - 1) * self.menuItemHeight, 0, self.buttonScaleX, self.buttonScaleY)
 
       love.graphics.setColor(0, 0, 0, 255)
       love.graphics.setFont(self.menuFont)
@@ -51,11 +54,6 @@ function MenuScene:draw()
                         self.y + (i - 1) * self.menuItemHeight + self.menuItemHeight / 2 - self.fontHeight / 2,
                         self.menuWidth, 'center')
 
-      love.graphics.setColor(unpack(self.menuBorder))
-
-      love.graphics.rectangle('line', self.x, self.y + (i - 1) * self.menuItemHeight,
-                           self.menuWidth, self.menuItemHeight,
-                           self.menuWidth / 10, self.menuWidth / 10)
    end
 
    love.graphics.setFont(oldFont)
