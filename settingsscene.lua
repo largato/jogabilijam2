@@ -1,5 +1,6 @@
 require "assets"
 require "settings"
+require "soundmanager"
 
 local Object = require 'libs/classic/classic'
 
@@ -64,8 +65,12 @@ end
 function SettingsScene:keyPressed(key, scancode, isRepeat)
    if key=="up" and not isRepeat then
       self.line = (self.line - 2) % #self.items + 1
+      soundManager:stop("menuselect")
+      soundManager:play("menuselect")
    elseif key=="down" and not isRepeat then
       self.line = self.line % #self.items + 1
+      soundManager:stop("menuselect")
+      soundManager:play("menuselect")
    elseif key=="escape" and not isRepeat then
       sceneManager:setCurrent("menu")
    elseif key=="return" and not isRepeat then
@@ -74,8 +79,12 @@ function SettingsScene:keyPressed(key, scancode, isRepeat)
       end
    elseif key=="left" and not isRepeat then
       settings:previousSetting(self.line)
+      soundManager:stop("menuselect")
+      soundManager:play("menuselect")
    elseif key=="right" and not isRepeat then
       settings:nextSetting(self.line)
+      soundManager:stop("menuselect")
+      soundManager:play("menuselect")
    end
 end
 
