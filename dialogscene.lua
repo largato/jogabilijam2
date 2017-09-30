@@ -15,7 +15,7 @@ function DialogScene:init()
    local scaleFactor = settings:screenScaleFactor()
    self.titleFont = assets.fonts.pressstartregular(assets.config.fonts.charNameHeight * scaleFactor)
    self.textFont = assets.fonts.pressstartregular(assets.config.fonts.dialogTextHeight * scaleFactor)
-
+   self.dialogBox = love.graphics.newImage('assets/images/dialog_box.png')
    self.absentLeftX = -love.graphics.getWidth() / 2
    self.absentRightX = love.graphics.getWidth() * 1.5
    self.leftX = self.absentLeftX
@@ -129,21 +129,21 @@ function DialogScene:draw()
    if self.currentDialogText ~= nil then
       local x = love.graphics.getWidth() * 0.1
       local y = love.graphics.getHeight() * 0.7
-      local w = love.graphics.getWidth() * 0.8
-      local h = love.graphics.getHeight() * 0.3
-      love.graphics.setColor(72, 178, 255, 255)
-      love.graphics.rectangle('fill', x, y, w, h)
+      local w = (love.graphics.getWidth() * 0.8) / self.dialogBox:getWidth()
+      local h = love.graphics.getHeight() * 0.3 / self.dialogBox:getHeight()
+      love.graphics.draw(self.dialogBox, x, y, 0, w, h)
 
       x = love.graphics.getWidth() * 0.15
       y = love.graphics.getHeight() * 0.75
       w = love.graphics.getWidth() - (2 * x)
 
-      love.graphics.setColor(255, 255, 255, 255)
       love.graphics.setFont(self.titleFont)
+      love.graphics.setColor(72, 178, 255, 255)
       love.graphics.printf(self.currentDialogChar.name, x, y, w, 'left')
 
       y = love.graphics.getHeight() * 0.8
       love.graphics.setFont(self.textFont)
+      love.graphics.setColor(0, 0, 0, 255)
       love.graphics.printf(self.currentDialogText, x, y, w, 'left')
    end
    -- restore previous graphic settings --
