@@ -2,6 +2,7 @@ require "entitymanager"
 require "stringhelper"
 require "scenemanager"
 require "settings"
+require "soundmanager"
 
 local Map = require "libs/Simple-Tiled-Implementation/sti"
 local Camera = require "camera"
@@ -15,6 +16,10 @@ local CreditsScene = require "creditsscene"
 local debugMode = true
 
 function love.load()
+   soundManager:add("battle", "assets/sounds/battle.mp3")
+   soundManager:add("menu", "assets/sounds/menu.mp3")
+   soundManager:playLoop("menu")
+
    local map = Map("assets/maps/green_valley.lua")
    sceneManager:add("menu", MenuScene())
    sceneManager:add("intro", DialogScene('intro', "battle"))
