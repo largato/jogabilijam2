@@ -307,7 +307,7 @@ return {
         },
         {
           id = 5,
-          name = "Player-Loira",
+          name = "Player-Iara",
           type = "",
           shape = "rectangle",
           x = 1544,
@@ -319,34 +319,8 @@ return {
           properties = {}
         },
         {
-          id = 6,
-          name = "Player-Cidadao",
-          type = "",
-          shape = "rectangle",
-          x = 1638,
-          y = 1641,
-          width = 16,
-          height = 16,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 7,
-          name = "CPU-Loira",
-          type = "",
-          shape = "ellipse",
-          x = 1417,
-          y = 1322,
-          width = 16,
-          height = 16,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
           id = 9,
-          name = "CPU-Loira",
+          name = "CPU-Mary",
           type = "",
           shape = "ellipse",
           x = 1481.5,
@@ -372,7 +346,7 @@ return {
         },
         {
           id = 11,
-          name = "CPU-Saci",
+          name = "CPU-Mao",
           type = "",
           shape = "ellipse",
           x = 1673.5,
