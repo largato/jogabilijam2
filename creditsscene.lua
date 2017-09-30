@@ -13,6 +13,10 @@ function CreditsScene:init()
    self.subtitleFont = assets.fonts.pressstartregular(assets.config.fonts.creditsSubtitleSize * scaleFactor)
    self.textFont = assets.fonts.pressstartregular(assets.config.fonts.creditsTextSize * scaleFactor)
    self.keystrokeCount = 0
+   self.background = love.graphics.newImage('assets/images/bg_intro.png')
+   self.titleColor = {255, 255, 255, 255}
+   self.subtitleColor = {255, 255, 255, 255}
+   self.textColor = {0, 0, 107, 255}
 end
 
 function CreditsScene:update(dt)
@@ -24,11 +28,13 @@ function CreditsScene:draw()
    local oldFont = love.graphics.getFont()
    local r, g, b, a = love.graphics.getColor()
 
-   -- clear --
-   love.graphics.clear(255, 255, 255, 255)
-   
+   -- background --
+   local bgXScale = love.graphics.getWidth()/self.background:getWidth()
+   local bgYScale = love.graphics.getHeight()/self.background:getHeight()
+   love.graphics.draw(self.background, 0, 0, 0, bgXScale, bgYScale)
+
    -- render static credits --
-   love.graphics.setColor(0, 0, 0, 255)
+   love.graphics.setColor(unpack(self.titleColor))
    love.graphics.setFont(self.titleFont)
    local title = "Créditos"
    local titleWidth = self.titleFont:getWidth(title)
@@ -37,7 +43,7 @@ function CreditsScene:draw()
    love.graphics.printf(title, titleX, titleY, titleWidth)
 
    -- Programming --
-   love.graphics.setColor(255, 0, 0, 255)
+   love.graphics.setColor(unpack(self.subtitleColor))
    love.graphics.setFont(self.subtitleFont)
    local programming = "Programação"
    local programmingX = love.graphics.getWidth() * 0.1
@@ -45,7 +51,7 @@ function CreditsScene:draw()
    local programmingWidth = self.subtitleFont:getWidth(programming)
    love.graphics.printf(programming, programmingX, programmingY, programmingWidth)
 
-   love.graphics.setColor(0, 0, 0, 255)
+   love.graphics.setColor(unpack(self.textColor))
    love.graphics.setFont(self.textFont)
    local roger = "Roger Zanoni"
    local rogerX = love.graphics.getWidth() * 0.1
@@ -60,7 +66,7 @@ function CreditsScene:draw()
    love.graphics.printf(luiz, luizX, luizY, luizWidth)
 
    -- Art --
-   love.graphics.setColor(0, 0, 255, 255)
+   love.graphics.setColor(unpack(self.subtitleColor))
    love.graphics.setFont(self.subtitleFont)
    local art = "Arte"
    local artX = love.graphics.getWidth() * 0.6
@@ -68,7 +74,7 @@ function CreditsScene:draw()
    local artWidth = self.subtitleFont:getWidth(art)
    love.graphics.printf(art, artX, artY, artWidth)
 
-   love.graphics.setColor(0, 0, 0, 255)
+   love.graphics.setColor(unpack(self.textColor))
    love.graphics.setFont(self.textFont)
    local diogo = "Diogo Souza"
    local diogoX = love.graphics.getWidth() * 0.6
@@ -84,8 +90,14 @@ function CreditsScene:draw()
    luizY = love.graphics.getHeight() * 0.45
    love.graphics.printf(luiz, luizX, luizY, luizWidth)
 
+   local oga = "OpenGameArt.org"
+   local ogaX = love.graphics.getWidth() * 0.6
+   local ogaY = love.graphics.getHeight() * 0.5
+   local ogaWidth = self.textFont:getWidth(oga)
+   love.graphics.printf(oga, ogaX, ogaY, ogaWidth)
+
    -- Music --
-   love.graphics.setColor(0, 107, 0, 255)
+   love.graphics.setColor(unpack(self.subtitleColor))
    love.graphics.setFont(self.subtitleFont)
    local music = "Musica"
    local musicX = love.graphics.getWidth() * 0.1
@@ -93,14 +105,14 @@ function CreditsScene:draw()
    local musicWidth = self.subtitleFont:getWidth(music)
    love.graphics.printf(music, musicX, musicY, musicWidth)
 
-   love.graphics.setColor(0, 0, 0, 255)
+   love.graphics.setColor(unpack(self.textColor))
    love.graphics.setFont(self.textFont)
-   luizX = love.graphics.getWidth() * 0.1
-   luizY = love.graphics.getHeight() * 0.75
-   love.graphics.printf(luiz, luizX, luizY, luizWidth)
+   ogaX = love.graphics.getWidth() * 0.1
+   ogaY = love.graphics.getHeight() * 0.75
+   love.graphics.printf(oga, ogaX, ogaY, ogaWidth)
 
    -- Level design --
-   love.graphics.setColor(100, 100, 0, 255)
+   love.graphics.setColor(unpack(self.subtitleColor))
    love.graphics.setFont(self.subtitleFont)
    local level = "Level design"
    local levelX = love.graphics.getWidth() * 0.6
@@ -108,7 +120,7 @@ function CreditsScene:draw()
    local levelWidth = self.subtitleFont:getWidth(level)
    love.graphics.printf(level, levelX, levelY, levelWidth)
 
-   love.graphics.setColor(0, 0, 0, 255)
+   love.graphics.setColor(unpack(self.textColor))
    love.graphics.setFont(self.textFont)
    rogerX = love.graphics.getWidth() * 0.6
    rogerY = love.graphics.getHeight() * 0.75
