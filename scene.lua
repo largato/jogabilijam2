@@ -50,6 +50,7 @@ function Scene:draw()
    c:set()
    self.map:draw(-c.x, -c.y, c.scaleX, c.scaleY)
    manager:draw(0,0)
+   manager:drawUI(0,0)
    self:drawHUD(c.x, c.y)
    c:unset()
 end
