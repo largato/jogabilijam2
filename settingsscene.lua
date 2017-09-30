@@ -14,6 +14,7 @@ end
 function SettingsScene:init()
    self.buttonOnImage = love.graphics.newImage('assets/images/button_on.png')
    self.buttonOffImage = love.graphics.newImage('assets/images/button_off.png')
+   self.background = love.graphics.newImage('assets/images/bg_menu.png')
 end
 
 function SettingsScene:update(dt)
@@ -22,6 +23,10 @@ end
 function SettingsScene:draw()
    local oldFont = love.graphics.getFont()
    local r, g, b, a = love.graphics.getColor()
+
+   local bgScaleX = love.graphics.getWidth() / self.background:getWidth()
+   local bgScaleY = love.graphics.getHeight() / self.background:getHeight()
+   love.graphics.draw(self.background, 0, 0, 0, bgScaleX, bgScaleY)
 
    fontHeight = assets.config.fonts.menuItemHeight * settings:screenScaleFactor()
    menuFont = assets.fonts.pressstartregular(fontHeight)
