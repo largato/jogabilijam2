@@ -9,12 +9,11 @@ function SettingsScene:new()
    self.items = settings:currentSettings()
    table.insert(self.items, {"Voltar"})
    self.line = 1
-   self.menuBackground = {0, 255, 255, 64}
-   self.menuBorder = {0, 255, 255, 100}
-   self.selected = {179, 211, 173, 200}
 end
 
 function SettingsScene:init()
+   self.buttonOnImage = love.graphics.newImage('assets/images/button_on.png')
+   self.buttonOffImage = love.graphics.newImage('assets/images/button_off.png')
 end
 
 function SettingsScene:update(dt)
@@ -24,24 +23,26 @@ function SettingsScene:draw()
    local oldFont = love.graphics.getFont()
    local r, g, b, a = love.graphics.getColor()
 
-   local fontHeight = assets.config.fonts.menuItemHeight * settings:screenScaleFactor()
-   local menuFont = assets.fonts.pressstartregular(fontHeight)
-   local menuWidth = love.graphics.getWidth() * 0.4
-   local menuItemHeight = fontHeight * 2
-   local menuHeight = menuItemHeight * #self.items
-   local x = love.graphics.getWidth() / 2 - menuWidth / 2
-   local y = love.graphics.getHeight() / 2 - menuHeight / 2
+   fontHeight = assets.config.fonts.menuItemHeight * settings:screenScaleFactor()
+   menuFont = assets.fonts.pressstartregular(fontHeight)
+   menuWidth = love.graphics.getWidth() * 0.4
+   menuItemHeight = fontHeight * 2
+   menuHeight = menuItemHeight * #self.items
+   x = love.graphics.getWidth() / 2 - menuWidth / 2
+   y = love.graphics.getHeight() / 2 - menuHeight / 2
+   buttonScaleX = menuWidth / self.buttonOnImage:getWidth()
+   buttonScaleY = menuItemHeight / self.buttonOnImage:getHeight()
 
    for i, setting in pairs(self.items) do
+      love.graphics.setColor(r, g, b, a)
+      local button = nil
       if i == self.line then
-         love.graphics.setColor(unpack(self.selected))
+         button = self.buttonOnImage
       else
-         love.graphics.setColor(unpack(self.menuBackground))
+         button = self.buttonOffImage
       end
 
-      love.graphics.rectangle('fill', x, y + (i - 1) * menuItemHeight,
-                           menuWidth, menuItemHeight,
-                           menuWidth / 10, menuWidth / 10)
+      love.graphics.draw(button, x, y + (i - 1) * menuItemHeight, 0, buttonScaleX, buttonScaleY)
 
       love.graphics.setColor(0, 0, 0, 255)
       love.graphics.setFont(menuFont)
@@ -49,11 +50,6 @@ function SettingsScene:draw()
                         y + (i - 1) * menuItemHeight + menuItemHeight / 2 - fontHeight / 2,
                         menuWidth, 'center')
 
-      love.graphics.setColor(unpack(self.menuBorder))
-
-      love.graphics.rectangle('line', x, y + (i - 1) * menuItemHeight,
-                           menuWidth, menuItemHeight,
-                           menuWidth / 10, menuWidth / 10)
    end
 
    love.graphics.setFont(oldFont)
