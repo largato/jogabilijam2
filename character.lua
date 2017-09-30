@@ -90,8 +90,6 @@ function Character:draw(ox, oy)
       self.moveMap:draw(ox, oy)
    elseif self.attacking then
       self.attackMap:draw(ox, oy)
-   elseif self.selected then
-      self.actionMenu:draw(ox, oy)
    end
    self.sprite:draw(ox, oy)
 end

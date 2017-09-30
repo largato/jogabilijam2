@@ -51,4 +51,12 @@ function EntityManager:draw(ox, oy)
    end
 end
 
+function EntityManager:drawUI(ox, oy)
+   for entity in pairs(self.entities) do
+      if entity.selected then
+         entity.actionMenu:draw(ox, oy)
+      end
+   end
+end
+
 manager = EntityManager()
