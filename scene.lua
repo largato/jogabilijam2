@@ -28,6 +28,9 @@ function Scene:new(camera, map)
 end
 
 function Scene:init()
+   soundManager:stopAll()
+   soundManager:playLoop("battle")
+
    local scaleFactor = settings:screenScaleFactor()
    self.titleFont = assets.fonts.dpcomic(assets.config.fonts.titleHeight * scaleFactor)
    self.charNameFont = assets.fonts.dpcomic(assets.config.fonts.charNameHeight * scaleFactor)
