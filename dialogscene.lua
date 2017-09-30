@@ -138,7 +138,7 @@ function DialogScene:draw()
       w = love.graphics.getWidth() - (2 * x)
 
       love.graphics.setFont(self.titleFont)
-      love.graphics.setColor(72, 178, 255, 255)
+      love.graphics.setColor(32, 138, 215, 255)
       love.graphics.printf(self.currentDialogChar.name, x, y, w, 'left')
 
       y = love.graphics.getHeight() * 0.8
