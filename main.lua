@@ -18,6 +18,8 @@ local debugMode = true
 function love.load()
    soundManager:add("battle", "assets/sounds/battle.mp3")
    soundManager:add("menu", "assets/sounds/menu.mp3")
+   soundManager:add("menuselect", "assets/sounds/menuselect.wav", true)
+   soundManager:add("accept", "assets/sounds/accept.mp3", true)
    soundManager:playLoop("menu")
 
    local map = Map("assets/maps/green_valley.lua")
