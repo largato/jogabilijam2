@@ -6,5 +6,8 @@ return {
    dialogTextHeight = 20,
    creditsTitleSize = 32,
    creditsSubtitleSize = 26,
-   creditsTextSize = 20
+   creditsTextSize = 20,
+   battleTurnSize = 24,
+   battleCharNameSize = 20,
+   battleCharAttributeSize = 12
 }
