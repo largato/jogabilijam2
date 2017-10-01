@@ -1,10 +1,10 @@
 name: Iara
-hp: 50
+hp: 80
 mp: 30
 speed: 96
 movement: 3
 attack: 2
-damage: 15
+damage: 30
 portrait: assets/images/loira_portrait.png
 avatar: assets/images/loira_avatar.png
 animation.idle: { image = love.graphics.newImage 'assets/images/iara.png', frameWidth=26, frameHeight=34, stopAtEnd=false, frames={ {1, 1, 4, 1, .4} } }
