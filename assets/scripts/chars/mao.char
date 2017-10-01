@@ -2,9 +2,9 @@ name: Mão invisível
 hp: 50
 mp: 30
 speed: 96
-movement: 1
-attack: 5
-damage: 10
-portrait: assets/images/cidadao_portrait.png
-avatar: assets/images/cidadao_avatar.png
-animation.idle: { image = love.graphics.newImage 'assets/images/homidebem.png', frameWidth=26, frameHeight=34, stopAtEnd=false, frames={ {1, 1, 4, 1, .4} } }
+movement: 15
+attack: 2
+damage: 5
+portrait: assets/images/mao_portrait.png
+avatar: assets/images/mao_avatar.png
+animation.idle: { image = love.graphics.newImage 'assets/images/mao.png', frameWidth=32, frameHeight=32, stopAtEnd=false, frames={ {1, 1, 4, 1, .4} } }
