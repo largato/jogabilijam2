@@ -8,6 +8,6 @@ return {
    creditsSubtitleSize = 26,
    creditsTextSize = 20,
    battleTurnSize = 24,
-   battleCharNameSize = 20,
+   battleCharNameSize = 16,
    battleCharAttributeSize = 12
 }
