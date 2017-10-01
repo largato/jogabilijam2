@@ -32,9 +32,9 @@ function Scene:init()
    soundManager:playLoop("battle")
 
    local scaleFactor = settings:screenScaleFactor()
-   self.titleFont = assets.fonts.dpcomic(assets.config.fonts.titleHeight * scaleFactor)
-   self.charNameFont = assets.fonts.dpcomic(assets.config.fonts.charNameHeight * scaleFactor)
-   self.menuItemFont = assets.fonts.dpcomic(assets.config.fonts.menuItemHeight * scaleFactor)
+   self.titleFont = assets.fonts.pressstartregular(assets.config.fonts.battleTurnSize * scaleFactor)
+   self.charNameFont = assets.fonts.pressstartregular(assets.config.fonts.battleCharNameSize * scaleFactor)
+   self.menuItemFont = assets.fonts.pressstartregular(assets.config.fonts.battleCharAttributeSize * scaleFactor)
 
    self.map:resize(love.graphics.getWidth(), love.graphics.getHeight())
    self:nextChar()
@@ -64,7 +64,13 @@ function Scene:drawHUD(ox, oy)
    local r, g, b, a = love.graphics.getColor()
 
    -- Turn/phase information --
-   local turnInfo = "Turno "..self.turn.." - "..self.team
+   local teamName = ""
+   if self.team == "Player" then
+      teamName = "Jogador"
+   else
+      teamName = "CPU"
+   end
+   local turnInfo = "Turno "..self.turn.." - "..teamName
    local tunInfoX = love.graphics.getWidth() - self.titleFont:getWidth(turnInfo) - 10
    love.graphics.setFont(self.titleFont)
    love.graphics.setColor(255, 0, 0, 255)
@@ -105,7 +111,7 @@ function Scene:drawHUD(ox, oy)
       love.graphics.setFont(self.menuItemFont)
       love.graphics.printf("Vida", charAttrX, charHPY, charAttrWidth, 'left')
       love.graphics.printf(charHP, charAttrX, charHPY, charAttrWidth, 'right')
-      love.graphics.printf("Fuleiragem", charAttrX, charMPY, charAttrWidth, 'left')
+      love.graphics.printf("Ginga", charAttrX, charMPY, charAttrWidth, 'left')
       love.graphics.printf(charMP, charAttrX, charMPY, charAttrWidth, 'right')
    end
    -- Restore original graphical settings --
