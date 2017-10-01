@@ -127,10 +127,6 @@ function Scene:highlightChar(index)
       return
    end
 
-   if self.charIndex > 0 then
-      self:char().highlighted = false
-   end
-
    self:char(index).highlighted = true
    self.charIndex = index
 end
@@ -152,6 +148,10 @@ function Scene:nextChar()
       return
    end
 
+   if self:char() then
+      self:char().highlighted = false
+   end
+
    local index = self.charIndex
    repeat
       index = index % table.getn(self:currentTeam()) + 1
@@ -166,6 +166,10 @@ end
 function Scene:previousChar()
    if (self:char() and self:char().selected) or self:turnEnded() then
       return
+   end
+
+   if self:char() then
+      self:char().highlighted = false
    end
 
    local index = self.charIndex
