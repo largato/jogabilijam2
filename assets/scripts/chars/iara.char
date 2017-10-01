@@ -5,6 +5,6 @@ speed: 96
 movement: 3
 attack: 2
 damage: 30
-portrait: assets/images/loira_portrait.png
-avatar: assets/images/loira_avatar.png
+portrait: assets/images/iara_portrait.png
+avatar: assets/images/iara_avatar.png
 animation.idle: { image = love.graphics.newImage 'assets/images/iara.png', frameWidth=26, frameHeight=34, stopAtEnd=false, frames={ {1, 1, 4, 1, .4} } }
