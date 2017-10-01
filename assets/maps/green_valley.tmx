@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="right-down" width="99" height="100" tilewidth="32" tileheight="32" nextobjectid="12">
+<map version="1.0" tiledversion="1.0.3" orientation="orthogonal" renderorder="right-down" width="99" height="100" tilewidth="32" tileheight="32" nextobjectid="16">
  <tileset firstgid="1" name="Green Valley" tilewidth="32" tileheight="32" tilecount="112" columns="14">
   <image source="../images/green_valley_assets.png" width="448" height="256"/>
  </tileset>
@@ -222,6 +222,18 @@
    <ellipse/>
   </object>
   <object id="11" name="CPU-Mao" x="1673.5" y="1387" width="16" height="16">
+   <ellipse/>
+  </object>
+  <object id="12" name="CPU-Mao" x="1387" y="1350" width="16" height="16">
+   <ellipse/>
+  </object>
+  <object id="13" name="CPU-Mao" x="1540" y="1324" width="16" height="16">
+   <ellipse/>
+  </object>
+  <object id="14" name="CPU-Cidadao" x="1448" y="1289" width="16" height="16">
+   <ellipse/>
+  </object>
+  <object id="15" name="CPU-Cidadao" x="1669" y="1323" width="16" height="16">
    <ellipse/>
   </object>
  </objectgroup>
