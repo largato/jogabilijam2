@@ -1,8 +1,8 @@
 name: Loira do banheiro
-hp: 50
+hp: 60
 mp: 30
 speed: 96
-movement: 3
+movement: 10
 attack: 2
 damage: 15
 portrait: assets/images/loira_portrait.png
