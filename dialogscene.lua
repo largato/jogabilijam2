@@ -25,9 +25,11 @@ function DialogScene:init()
 end
 
 function DialogScene:parseScript(dialogName)
-   local lines = love.filesystem.lines("assets/scripts/dialogs/"..dialogName:lower()..".dialog")
-   for content in lines do
-      local values = content:split(':')
+   local fileName = "assets/scripts/dialogs/"..dialogName:lower()..".dialog"
+   local content, _ = love.filesystem.read(fileName)
+   local lines = content:split('\n')
+   for i, line in ipairs(lines) do
+      local values = line:split(':')
       if values[1] == 'chars' then
          local chars = values[2]:split(',')
          for i, c in ipairs(chars) do
