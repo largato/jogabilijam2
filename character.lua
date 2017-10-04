@@ -10,8 +10,10 @@ Character = Object:extend()
 
 function Character.loadCharFromScript(charName, map, x, y)
    local character = Character(map, x, y)
-   local lines = love.filesystem.lines("assets/scripts/chars/"..charName:lower()..".char")
-   for line in lines do
+   local fileName = "assets/scripts/chars/"..charName:lower()..".char"
+   local content, _ = love.filesystem.read(fileName)
+   local lines = content:split('\n')
+   for i, line in ipairs(lines) do
       local parts = line:split(':')
       local key = parts[1]:lower()
       local value = parts[2]:trim()
