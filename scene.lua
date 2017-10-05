@@ -348,17 +348,17 @@ function Scene:startEnemyTurn()
    -- TODO: create a different behavior for each enemy type
    self.enemyStates = {
       default = {
-         { duration = 0.2 },
-         { duration = 0.2, action = Scene.enemySelect },
-         { duration = 0.2, action = Scene.enemySetMoving },
-         { duration = 0.2, action = Scene.enemySetDestination },
-         { duration = 0.2, action = Scene.enemyMove, after = 'attack'}
+         { duration = 0.5 },
+         { duration = 0.5, action = Scene.enemySelect },
+         { duration = 0.5, action = Scene.enemySetMoving },
+         { duration = 0.5, action = Scene.enemySetDestination },
+         { duration = 0.5, action = Scene.enemyMove, after = 'attack'}
       },
       attack = {
-         { duration = 0.2 },
-         { duration = 0.2, action = Scene.enemySetAttacking },
-         { duration = 0.2, action = Scene.enemySetAttackTarget },
-         { duration = 0.2, action = Scene.enemyAttack, after = 'actionEnd' }
+         { duration = 0.5 },
+         { duration = 0.5, action = Scene.enemySetAttacking },
+         { duration = 0.5, action = Scene.enemySetAttackTarget },
+         { duration = 0.5, action = Scene.enemyAttack, after = 'actionEnd' }
       },
       actionEnd = {
          { duration = 0.1, action = Scene.enemyCheckEnd }
