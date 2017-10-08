@@ -12,6 +12,7 @@ local MenuScene = require "menuscene"
 local DialogScene = require "dialogscene"
 local SettingsScene = require "settingsscene"
 local CreditsScene = require "creditsscene"
+local IntroScene = require "introscene"
 
 local debugMode = true
 
@@ -23,6 +24,7 @@ function love.load()
    soundManager:playLoop("menu")
 
    local map = Map("assets/maps/green_valley.lua")
+   sceneManager:add("intro", IntroScene())
    sceneManager:add("menu", MenuScene())
    sceneManager:add("prologue", DialogScene('prologue', "battle"))
    sceneManager:add("battle", Scene(Camera(), map))
@@ -30,7 +32,7 @@ function love.load()
    sceneManager:add("EnemyWon", EndScene("Inimigo"))
    sceneManager:add("settings", SettingsScene())
    sceneManager:add("credits", CreditsScene())
-   sceneManager:setCurrent("menu")
+   sceneManager:setCurrent("intro")
 end
 
 function love.update(dt)
