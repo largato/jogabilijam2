@@ -66,7 +66,7 @@ end
 
 function MenuScene:itemSelected(item)
    if item == 1 then
-      sceneManager:setCurrent("intro")
+      sceneManager:setCurrent("prologue")
    elseif item == 2 then
       sceneManager:setCurrent("settings")
    elseif item == 3 then
