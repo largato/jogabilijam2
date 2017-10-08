@@ -24,7 +24,7 @@ function love.load()
 
    local map = Map("assets/maps/green_valley.lua")
    sceneManager:add("menu", MenuScene())
-   sceneManager:add("intro", DialogScene('intro', "battle"))
+   sceneManager:add("prologue", DialogScene('prologue', "battle"))
    sceneManager:add("battle", Scene(Camera(), map))
    sceneManager:add("PlayerWon", EndScene("Jogador"))
    sceneManager:add("EnemyWon", EndScene("Inimigo"))
