@@ -7,9 +7,11 @@ local Object = require 'libs/classic/classic'
 local Character = require 'character'
 local Behavior = require "libs/knife/knife/behavior"
 
-Scene = Object:extend()
+local EndScene = require 'endscene'
 
-function Scene:new(camera, map)
+BattleScene = Object:extend()
+
+function BattleScene:new(camera, map)
    self.map = map
    self.camera = camera
 
@@ -27,7 +29,7 @@ function Scene:new(camera, map)
    self.team = "Player"
 end
 
-function Scene:init()
+function BattleScene:init()
    soundManager:stopAll()
    soundManager:playLoop("battle")
 
@@ -40,15 +42,15 @@ function Scene:init()
    self:nextChar()
 end
 
-function Scene:setCamera(c)
+function BattleScene:setCamera(c)
    self.camera = c
 end
 
-function Scene:setMap(m)
+function BattleScene:setMap(m)
    self.map = m
 end
 
-function Scene:draw()
+function BattleScene:draw()
    local c = self.camera
    c:set()
    self.map:draw(-c.x, -c.y, c.scaleX, c.scaleY)
@@ -58,7 +60,7 @@ function Scene:draw()
    c:unset()
 end
 
-function Scene:drawHUD(ox, oy)
+function BattleScene:drawHUD(ox, oy)
    -- Store original graphical settings --
    local oldFont = love.graphics.getFont()
    local r, g, b, a = love.graphics.getColor()
@@ -119,7 +121,7 @@ function Scene:drawHUD(ox, oy)
    love.graphics.setColor(r, g, b, a)
 end
 
-function Scene:update(dt)
+function BattleScene:update(dt)
    self.camera:update(dt)
    self.map:update(dt)
    manager:update(dt)
@@ -128,28 +130,27 @@ function Scene:update(dt)
    end
 end
 
-function Scene:highlightChar(index)
+function BattleScene:highlightChar(index)
    if self.charIndex == index then
       return
    end
-
    self:char(index).highlighted = true
    self.charIndex = index
 end
 
-function Scene:selectChar(index)
+function BattleScene:selectChar(index)
    if self:char() ~= nil then
       self:char().selected = true
    end
 end
 
-function Scene:unselectChar(index)
+function BattleScene:unselectChar(index)
    if self:char() ~= nil then
       self:char():unselect()
    end
 end
 
-function Scene:nextChar()
+function BattleScene:nextChar()
    if (self:char() and self:char().selected) or self:turnEnded() then
       return
    end
@@ -169,7 +170,7 @@ function Scene:nextChar()
    self:char():resetUI()
 end
 
-function Scene:previousChar()
+function BattleScene:previousChar()
    if (self:char() and self:char().selected) or self:turnEnded() then
       return
    end
@@ -188,54 +189,54 @@ function Scene:previousChar()
                      self:char().y - h / 2)
 end
 
-function Scene:setTargetTile(x, y)
+function BattleScene:setTargetTile(x, y)
    if not self:charSelected() then
       return
    end
    self:char():actionMap():setTarget(x, y)
 end
 
-function Scene:targetTileUp()
+function BattleScene:targetTileUp()
    if not self:charSelected() then
       return
    end
    self:char():actionMap():targetUp()
 end
 
-function Scene:targetTileDown()
+function BattleScene:targetTileDown()
    if not self:charSelected() then
       return
    end
    self:char():actionMap():targetDown()
 end
 
-function Scene:targetTileLeft()
+function BattleScene:targetTileLeft()
    if not self:charSelected() then
       return
    end
    self:char():actionMap():targetLeft()
 end
 
-function Scene:targetTileRight()
+function BattleScene:targetTileRight()
    if not self:charSelected() then
       return
    end
    self:char():actionMap():targetRight()
 end
 
-function Scene:charSelected()
+function BattleScene:charSelected()
    return self:char() and self:char().selected
 end
 
-function Scene:charMoving()
+function BattleScene:charMoving()
    return self:char() and self:char().moving
 end
 
-function Scene:charAttacking()
+function BattleScene:charAttacking()
    return self:char() and self:char().attacking
 end
 
-function Scene:move()
+function BattleScene:move()
    if not self:charSelected() then
       return
    end
@@ -246,24 +247,25 @@ function Scene:move()
    end
 end
 
-function Scene:select()
+function BattleScene:select()
    if self.charIndex == 0 then
       return
    end
    self:char().selected = true
 end
 
-function Scene:attack(skip)
+function BattleScene:attack(skip)
    if not self:charSelected() then
       return
    end
    self:char():attackTarget()
 
    if self:playerWon() then
-      sceneManager:setCurrent("PlayerWon")
+      sceneManager:popAndPushScene(EndScene("Jogador"))
       return
    elseif self:enemyWon() then
-      sceneManager:setCurrent("EnemyWon")
+      sceneManager:popAndPushScene(EndScene("Inimigo"))
+      return
    end
 
    if skip or self:char():turnDone() then
@@ -271,7 +273,7 @@ function Scene:attack(skip)
    end
 end
 
-function Scene:currentTeam()
+function BattleScene:currentTeam()
    local chars = self.playerChars
    if self.team == "Enemy" then
       chars = self.cpuChars
@@ -279,7 +281,7 @@ function Scene:currentTeam()
    return chars
 end
 
-function Scene:turnEnded()
+function BattleScene:turnEnded()
    for i, char in ipairs(self:currentTeam()) do
       if not char:turnDone() then
          return false
@@ -288,7 +290,7 @@ function Scene:turnEnded()
    return true
 end
 
-function Scene:nextTeam()
+function BattleScene:nextTeam()
    if self.team == "Player" then
       self.team = "Enemy"
       self:startEnemyTurn()
@@ -300,13 +302,13 @@ function Scene:nextTeam()
    self:nextChar()
 end
 
-function Scene:resetChars()
+function BattleScene:resetChars()
    for i, char in ipairs(self:currentTeam()) do
       char:reset()
    end
 end
 
-function Scene:skip()
+function BattleScene:skip()
    if not self:char() then
       return
    end
@@ -318,7 +320,7 @@ function Scene:skip()
    end
 end
 
-function Scene:char(index)
+function BattleScene:char(index)
    if self.team == "Player" then
       return self.playerChars[index or self.charIndex]
    else
@@ -326,42 +328,42 @@ function Scene:char(index)
    end
 end
 
-function Scene:charActing()
+function BattleScene:charActing()
    return self:char():acting()
 end
 
-function Scene:menuUp()
+function BattleScene:menuUp()
    if not self:charSelected() then
       return
    end
    self:char().actionMenu:menuUp()
 end
 
-function Scene:menuDown()
+function BattleScene:menuDown()
    if not self:charSelected() then
       return
    end
    self:char().actionMenu:menuDown()
 end
 
-function Scene:startEnemyTurn()
+function BattleScene:startEnemyTurn()
    -- TODO: create a different behavior for each enemy type
    self.enemyStates = {
       default = {
          { duration = 0.5 },
-         { duration = 0.5, action = Scene.enemySelect },
-         { duration = 0.5, action = Scene.enemySetMoving },
-         { duration = 0.5, action = Scene.enemySetDestination },
-         { duration = 0.5, action = Scene.enemyMove, after = 'attack'}
+         { duration = 0.5, action = BattleScene.enemySelect },
+         { duration = 0.5, action = BattleScene.enemySetMoving },
+         { duration = 0.5, action = BattleScene.enemySetDestination },
+         { duration = 0.5, action = BattleScene.enemyMove, after = 'attack'}
       },
       attack = {
          { duration = 0.5 },
-         { duration = 0.5, action = Scene.enemySetAttacking },
-         { duration = 0.5, action = Scene.enemySetAttackTarget },
-         { duration = 0.5, action = Scene.enemyAttack, after = 'actionEnd' }
+         { duration = 0.5, action = BattleScene.enemySetAttacking },
+         { duration = 0.5, action = BattleScene.enemySetAttackTarget },
+         { duration = 0.5, action = BattleScene.enemyAttack, after = 'actionEnd' }
       },
       actionEnd = {
-         { duration = 0.1, action = Scene.enemyCheckEnd }
+         { duration = 0.1, action = BattleScene.enemyCheckEnd }
       }
    }
 
@@ -369,11 +371,11 @@ function Scene:startEnemyTurn()
    self.charIndex = 0
 end
 
-function Scene:enemySetMoving(scene)
+function BattleScene:enemySetMoving(scene)
    scene:char().moving = true
 end
 
-function Scene:enemySetDestination(scene)
+function BattleScene:enemySetDestination(scene)
    -- choose nearest player character as target
    local targetChar = scene:nearestPlayerChar(scene:char())
    if targetChar == nil then
@@ -407,7 +409,7 @@ function Scene:enemySetDestination(scene)
    scene:setTargetTile(targetTile.x, targetTile.y)
 end
 
-function Scene:nearestPlayerChar(origin)
+function BattleScene:nearestPlayerChar(origin)
    local nearest
    local minChar = 999999
    for i, char in ipairs(self.playerChars) do
@@ -423,11 +425,11 @@ function Scene:nearestPlayerChar(origin)
    return nearest
 end
 
-function Scene:enemySetAttacking(scene)
+function BattleScene:enemySetAttacking(scene)
    scene:char().attacking = true
 end
 
-function Scene:enemySetAttackTarget(scene)
+function BattleScene:enemySetAttackTarget(scene)
    -- choose nearest player character as target
    local targetChar = scene:nearestPlayerChar(scene:char())
 
@@ -441,7 +443,7 @@ function Scene:enemySetAttackTarget(scene)
    end
 end
 
-function Scene:enemyMove(scene)
+function BattleScene:enemyMove(scene)
    scene:move()
    if not scene:char().moved then
       -- force character status if the enemy didn't move
@@ -450,11 +452,11 @@ function Scene:enemyMove(scene)
    end
 end
 
-function Scene:enemyAttack(scene)
+function BattleScene:enemyAttack(scene)
    scene:attack(true)
 end
 
-function Scene:enemyCheckEnd(scene)
+function BattleScene:enemyCheckEnd(scene)
    if not scene:turnEnded() then
       scene.enemyBehavior:setState('default', 1)
    else
@@ -462,22 +464,22 @@ function Scene:enemyCheckEnd(scene)
    end
 end
 
-function Scene:enemySelect(scene)
+function BattleScene:enemySelect(scene)
    if scene:char() == nil then
       scene:nextChar()
    end
    scene:char().selected = true
 end
 
-function Scene:playerWon()
+function BattleScene:playerWon()
    return self:teamLost("CPU")
 end
 
-function Scene:enemyWon()
+function BattleScene:enemyWon()
    return self:teamLost("Player")
 end
 
-function Scene:teamLost(team)
+function BattleScene:teamLost(team)
    for k, char in ipairs(manager:getByType(team)) do
       if not char:dead() then
          return false
@@ -486,7 +488,7 @@ function Scene:teamLost(team)
    return true
 end
 
-function Scene:keyPressed(key, scancode,  isRepeat)
+function BattleScene:keyPressed(key, scancode,  isRepeat)
    if self.team == "Enemy" then
       return
    end
@@ -538,4 +540,4 @@ function Scene:keyPressed(key, scancode,  isRepeat)
    end
 end
 
-return Scene
+return BattleScene
