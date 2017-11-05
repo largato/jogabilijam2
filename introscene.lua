@@ -2,6 +2,8 @@ local Object = require 'libs/classic/classic'
 
 local Timer = require 'libs/knife/knife/timer'
 
+local MenuScene = require 'menuscene'
+
 IntroScene = Object:extend()
 
 local DEFAULT_INTERVAL = 3
@@ -40,12 +42,11 @@ function IntroScene:startTimer()
 end
 
 function IntroScene:nextSlide()
-   print("nextSlide")
    if self.currentSlide < #self.slides then
       self.currentSlide = self.currentSlide+1
       self:startTimer()
    else
-      sceneManager:setCurrent('menu')
+      sceneManager:popAndPushScene(MenuScene())
    end
 end
 
