@@ -2,6 +2,13 @@ require "assets"
 require "soundmanager"
 
 local Object = require 'libs/classic/classic'
+local Map = require "libs/Simple-Tiled-Implementation/sti"
+
+local BattleScene = require 'battlescene'
+local Camera = require "camera"
+local CreditsScene = require 'creditsscene'
+local DialogScene = require 'dialogscene'
+local SettingsScene = require 'settingsscene'
 
 MenuScene = Object:extend()
 
@@ -66,11 +73,13 @@ end
 
 function MenuScene:itemSelected(item)
    if item == 1 then
-      sceneManager:setCurrent("prologue")
+      local map = Map("assets/maps/green_valley.lua")
+      local battleScene = BattleScene(Camera(), map)
+      sceneManager:pushScene(DialogScene('prologue', battleScene))
    elseif item == 2 then
-      sceneManager:setCurrent("settings")
+      sceneManager:pushScene(SettingsScene())
    elseif item == 3 then
-      sceneManager:setCurrent("credits")
+      sceneManager:pushScene(CreditsScene())
    elseif item == 4 then
       love.event.quit(0)
    end

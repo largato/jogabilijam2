@@ -5,9 +5,9 @@ local flux = require 'libs/flux/flux'
 
 DialogScene = Object:extend()
 
-function DialogScene:new(dialogName, nextSceneName)
+function DialogScene:new(dialogName, nextScene)
    self.characters = {}
-   self.nextScene = nextSceneName
+   self.nextScene = nextScene
    self:parseScript(dialogName)
 end
 
@@ -56,7 +56,7 @@ function DialogScene:nextInstruction()
       self:parseInstruction(inst)
       self.currentInstruction = self.currentInstruction + 1
    else
-      sceneManager:setCurrent(self.nextScene)
+      sceneManager:popAndPushScene(self.nextScene)
    end
 end
 

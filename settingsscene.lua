@@ -72,10 +72,10 @@ function SettingsScene:keyPressed(key, scancode, isRepeat)
       soundManager:stop("menuselect")
       soundManager:play("menuselect")
    elseif key=="escape" and not isRepeat then
-      sceneManager:setCurrent("menu")
+      sceneManager:popScene()
    elseif key=="return" and not isRepeat then
       if self.items[self.line][1] == "Voltar" then -- XXX this is ugly, I know
-         sceneManager:setCurrent("menu")
+         sceneManager:popScene()
       end
    elseif key=="left" and not isRepeat then
       settings:previousSetting(self.line)

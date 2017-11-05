@@ -1,43 +1,59 @@
 local Object = require "libs/classic/classic"
 
+local Stack = require "stack"
+
 SceneManager = Object:extend()
 
 function SceneManager:new()
-   self.scenes = {}
+   self.sceneStack = Stack()
 end
 
-function SceneManager:add(sceneName, scene)
-   self.scenes[sceneName] = scene
-end
-
-function SceneManager:remove(sceneName)
-   if self.scenes[sceneName] == nil then
-      return
+function SceneManager:initCurrentScene()
+   if self.sceneStack:size() > 0 then
+      self.sceneStack:peek():init()
    end
 end
 
-function SceneManager:setCurrent(sceneName)
-   local scene = self.scenes[sceneName]
-   scene:init()
-   SceneManager.current = scene
+function SceneManager:pushScene(newScene)
+   self.sceneStack:push(newScene)
+   self:initCurrentScene()
+end
+
+function SceneManager:popScene()
+   self.sceneStack:pop()
+   self:initCurrentScene()
+end
+
+function SceneManager:popAndPushScene(newScene)
+   self.sceneStack:pop()
+   self.sceneStack:push(newScene)
+   self:initCurrentScene()
+end
+
+function SceneManager:printSceneStack()
+   print("Scene stack:")
+   self.sceneStack:print()
 end
 
 function SceneManager:update(dt)
-   if SceneManager.current == nil then
+   if self.sceneStack:size() == 0 then
       return
    end
-   SceneManager.current:update(dt)
+   self.sceneStack:peek():update(dt)
 end
 
 function SceneManager:draw()
-   if SceneManager.current == nil then
+   if self.sceneStack:size() == 0 then
       return
    end
-   SceneManager.current:draw()
+   self.sceneStack:peek():draw()
 end
 
 function SceneManager:keyPressed(key, scancode, isRepeat)
-   SceneManager.current:keyPressed(key, scancode, isRepeat)
+   if self.sceneStack:size() == 0 then
+      return
+   end
+   self.sceneStack:peek():keyPressed(key, scancode, isRepeat)
 end
 
 sceneManager = SceneManager()

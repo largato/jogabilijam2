@@ -50,7 +50,7 @@ function EndScene:keyPressed(key, scancode,  isRepeat)
       self.keystrokeCount = self.keystrokeCount + 1
    end
    if (self.keystrokeCount == 2) then
-      sceneManager:setCurrent("menu")
+      sceneManager:popScene()
    end
 end
 
