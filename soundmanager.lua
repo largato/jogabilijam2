@@ -10,7 +10,7 @@ function SoundManager:add(name, path, static)
    if static then
       self.sounds[name] = love.audio.newSource(path, "static")
    else
-      self.sounds[name] = love.audio.newSource(path)
+      self.sounds[name] = love.audio.newSource(path, "stream")
    end
 end
 
